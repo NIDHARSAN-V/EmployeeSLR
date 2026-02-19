@@ -1,3 +1,5 @@
-export default function EmployeeDashboard() {
-  return <h1>Employee Dashboard</h1>;
+import EmployeePage from "./components/EmployeePage";
+
+export default function Page() {
+  return <EmployeePage />;
 }

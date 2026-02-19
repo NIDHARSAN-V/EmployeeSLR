@@ -12,11 +12,11 @@ function AuthWrapper({ children }: { children: React.ReactNode }) {
   const publicRoutes = ["/login", "/register"];
 
   useEffect(() => {
-    if (!loading) {
-      if (!user && !publicRoutes.includes(path)) {
-        router.push("/login");
-      }
-    }
+    // if (!loading) {
+    //   if (!user && !publicRoutes.includes(path)) {
+    //     router.push("/login");
+    //   }
+    // }
   }, [user, loading, path]);
 
   if (loading) return <p>Loading...</p>;
