@@ -17,8 +17,13 @@ export default function ResolverDashboard() {
   }, [user, loading, router]);
 
   if (loading || !user || user.role !== "RESOLVER") {
-    return <div>Loading...</div>;
+    return <div className="flex items-center justify-center h-screen">Loading...</div>;
   }
 
-  return <h1>Resolver Dashboard</h1>;
+  return (
+    <div className="min-h-screen bg-gray-50 p-8">
+      <h1 className="text-3xl font-bold mb-4">Resolver Dashboard</h1>
+      <p className="text-gray-700">Manage and resolve assigned tickets.</p>
+    </div>
+  );
 } 
