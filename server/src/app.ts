@@ -19,6 +19,6 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
-app.use("/tickets", ticketRoutes);
+app.use("/api/tickets", ticketRoutes);
 
 export default app;
