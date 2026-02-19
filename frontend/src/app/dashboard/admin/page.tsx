@@ -17,13 +17,8 @@ export default function AdminDashboard() {
   }, [user, loading, router]);
 
   if (loading || !user || user.role !== "ADMIN") {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+    return <div>Loading...</div>;
   }
 
-  return (
-    <div className="min-h-screen bg-gray-50 p-8">
-      <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
-      <p className="text-gray-700">Overview of system and user management.</p>
-    </div>
-  );
+  return <h1>Admin Dashboard</h1>;
 } 
