@@ -11,23 +11,26 @@ export default function AssetForm({
 }) {
   const [requestType, setRequestType] = useState("hardware_request");
   const [loading, setLoading] = useState(false);
+  const [successMsg, setSuccessMsg] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSuccessMsg("");
+    setErrorMsg("");
 
     if (!userId) {
-      alert("User not authenticated");
+      setErrorMsg("User not authenticated. Please login again.");
       return;
     }
 
     try {
       setLoading(true);
 
-      await fetch("http://localhost:5000/tickets", {
+      const res = await fetch("http://localhost:5000/tickets", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({
           type: "asset",
           request_type: requestType,
@@ -35,11 +38,18 @@ export default function AssetForm({
         }),
       });
 
+      const data = await res.json();
+
+      if (!res.ok) {
+        setErrorMsg(data.message || "Failed to submit asset request");
+        return;
+      }
+
+      setSuccessMsg("✅ Asset request submitted successfully!");
       refreshTickets();
-      alert("Asset request submitted successfully!");
     } catch (error) {
       console.error("Error submitting asset request:", error);
-      alert("Failed to submit asset request");
+      setErrorMsg("Failed to connect to server. Is the backend running?");
     } finally {
       setLoading(false);
     }
@@ -47,13 +57,20 @@ export default function AssetForm({
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200 max-w-md">
+      <h2 className="text-3xl font-bold text-slate-800 mb-6">Request Asset</h2>
 
-      <h2 className="text-3xl font-bold text-slate-800 mb-6">
-        Request Asset
-      </h2>
+      {successMsg && (
+        <div className="mb-4 p-3 bg-green-100 text-green-700 rounded">
+          {successMsg}
+        </div>
+      )}
+      {errorMsg && (
+        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+          {errorMsg}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-
         <label className="block text-slate-700 font-medium">
           Select Asset Type
         </label>
@@ -69,12 +86,12 @@ export default function AssetForm({
         </select>
 
         <button
+          type="submit"
           disabled={loading}
           className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition disabled:opacity-50"
         >
           {loading ? "Submitting..." : "Submit"}
         </button>
-
       </form>
     </div>
   );
