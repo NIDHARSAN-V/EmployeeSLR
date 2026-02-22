@@ -6,7 +6,7 @@ import {
   completeTicket,
   getTicketsRaisedByUser,
   getTicketsSolvedByUser,
-  getTicketsByStatus
+  getTicketsByStatus,
 } from "../controllers/ticket.controller";
 
 const router = Router();
