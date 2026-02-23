@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth.routes";
 import ticketRoutes from "./routes/ticket.routes"
 import assetRoutes from "./routes/asset.routes";
 import notificationRoutes from "./routes/notification.routes";
+import discussionRoutes from "./routes/discussion.routes";
 
 
 const app = express();
@@ -25,6 +26,6 @@ app.use("/auth", authRoutes);
 app.use("/tickets", ticketRoutes);
 app.use("/assets", assetRoutes);
 app.use("/notifications", notificationRoutes);
-
+app.use("/discussion", discussionRoutes);
 
 export default app;

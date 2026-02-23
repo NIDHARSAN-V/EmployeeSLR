@@ -75,3 +75,86 @@ workEventActorSchema.index({ eventId: 1, role: 1 }, { unique: true });
 workEventActorSchema.index({ userId: 1 });
 
 export const WorkEventActor = mongoose.model<IWorkEventActor>("WorkEventActor", workEventActorSchema);
+
+// ===================== Discussion / Comments =====================
+export interface IDiscussionMessage {
+  userId: mongoose.Types.ObjectId;
+  message: string;
+  createdAt: Date;
+}
+
+export interface IDiscussion extends Document {
+  kind: WorkKind;
+  refId: mongoose.Types.ObjectId;
+  messages: IDiscussionMessage[];
+}
+
+const discussionSchema = new Schema<IDiscussion>(
+  {
+    kind: { type: String, enum: ["ticket", "asset"], required: true },
+    refId: { type: Schema.Types.ObjectId, required: true },
+    messages: [
+      {
+        userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+        message: { type: String, required: true, trim: true },
+        createdAt: { type: Date, default: Date.now },
+      },
+    ],
+  },
+  { versionKey: false }
+);
+
+discussionSchema.index({ kind: 1, refId: 1 }, { unique: true });
+
+export const Discussion = mongoose.model<IDiscussion>("Discussion", discussionSchema);
+
+// ===================== SLA Breach Collections =====================
+// Accept breach
+export interface ISlaAcceptBreach extends Document {
+  kind: WorkKind;
+  refId: mongoose.Types.ObjectId;
+  dueAt: Date;
+  breachedAt: Date;
+}
+
+const slaAcceptBreachSchema = new Schema<ISlaAcceptBreach>(
+  {
+    kind: { type: String, enum: ["ticket", "asset"], required: true },
+    refId: { type: Schema.Types.ObjectId, required: true },
+    dueAt: { type: Date, required: true },
+    breachedAt: { type: Date, default: Date.now, required: true },
+  },
+  { versionKey: false }
+);
+
+slaAcceptBreachSchema.index({ kind: 1, refId: 1 }, { unique: true });
+
+export const SlaAcceptBreach = mongoose.model<ISlaAcceptBreach>(
+  "SlaAcceptBreach",
+  slaAcceptBreachSchema
+);
+
+// Complete breach
+export interface ISlaCompleteBreach extends Document {
+  kind: WorkKind;
+  refId: mongoose.Types.ObjectId;
+  dueAt: Date;
+  breachedAt: Date;
+}
+
+const slaCompleteBreachSchema = new Schema<ISlaCompleteBreach>(
+  {
+    kind: { type: String, enum: ["ticket", "asset"], required: true },
+    refId: { type: Schema.Types.ObjectId, required: true },
+    dueAt: { type: Date, required: true },
+    breachedAt: { type: Date, default: Date.now, required: true },
+  },
+  { versionKey: false }
+);
+
+slaCompleteBreachSchema.index({ kind: 1, refId: 1 }, { unique: true });
+
+export const SlaCompleteBreach = mongoose.model<ISlaCompleteBreach>(
+  "SlaCompleteBreach",
+  slaCompleteBreachSchema
+);

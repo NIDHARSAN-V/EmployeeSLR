@@ -9,6 +9,7 @@ import {
   isValidStatus,
   getRole,
   buildView,
+  ensureDiscussion,
 } from "../service/resourceservice";
 
 export const createAsset = async (req: Request, res: Response) => {
@@ -39,6 +40,8 @@ export const createAsset = async (req: Request, res: Response) => {
 
   await WorkEventActor.create({ eventId: ev._id, userId: raised_by, role: "raised_by" });
 
+  await ensureDiscussion("asset", asset._id);
+
   return res.status(201).json(await buildView("asset", asset._id));
 };
 
@@ -64,7 +67,7 @@ export const acceptAsset = async (req: Request, res: Response) => {
 
   const ev = await WorkEvent.create({
     kind: "asset",
-    refId: assetId,
+    refId: new mongoose.Types.ObjectId(assetId),
     eventType: "ACCEPTED",
     occurredAt: acceptedAt,
     dueAt,
@@ -97,7 +100,7 @@ export const completeAsset = async (req: Request, res: Response) => {
 
   const ev = await WorkEvent.create({
     kind: "asset",
-    refId: assetId,
+    refId: new mongoose.Types.ObjectId(assetId),
     eventType: "COMPLETED",
     occurredAt: new Date(),
     dueAt: null,
@@ -111,20 +114,22 @@ export const completeAsset = async (req: Request, res: Response) => {
 export const listAssets = async (_: Request, res: Response) => {
   try {
     const assets = await Asset.find().sort({ _id: -1 }).lean();
-
-    const views = await Promise.all(
-      assets.map((a) =>
-        buildView("asset", a._id)
-      )
-    );
-
+    const views = await Promise.all(assets.map((a) => buildView("asset", a._id)));
     return res.json(views);
-  } catch (error) {
-    console.error("listAssets error:", error);
+  } catch {
     return res.status(500).json({ message: "Server error" });
   }
 };
 
+export const getAssetById = async (req: Request, res: Response) => {
+  const id = req.params.id;
+  if (!isValidObjectId(id)) return res.status(400).json({ message: "Invalid asset ID" });
+
+  const asset = await Asset.findById(id).lean();
+  if (!asset) return res.status(404).json({ message: "Asset not found" });
+
+  return res.json(await buildView("asset", new mongoose.Types.ObjectId(id)));
+};
 
 export const getAssetsRaisedByUser = async (req: Request, res: Response) => {
   const userId = req.params.userId;

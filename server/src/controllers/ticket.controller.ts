@@ -9,6 +9,7 @@ import {
   isValidStatus,
   getRole,
   buildView,
+  ensureDiscussion,
 } from "../service/resourceservice";
 
 export const createTicket = async (req: Request, res: Response) => {
@@ -39,6 +40,9 @@ export const createTicket = async (req: Request, res: Response) => {
 
   await WorkEventActor.create({ eventId: ev._id, userId: raised_by, role: "raised_by" });
 
+  // create empty discussion thread
+  await ensureDiscussion("ticket", ticket._id);
+
   return res.status(201).json(await buildView("ticket", ticket._id));
 };
 
@@ -64,7 +68,7 @@ export const acceptTicket = async (req: Request, res: Response) => {
 
   const ev = await WorkEvent.create({
     kind: "ticket",
-    refId: ticketId,
+    refId: new mongoose.Types.ObjectId(ticketId),
     eventType: "ACCEPTED",
     occurredAt: acceptedAt,
     dueAt,
@@ -97,7 +101,7 @@ export const completeTicket = async (req: Request, res: Response) => {
 
   const ev = await WorkEvent.create({
     kind: "ticket",
-    refId: ticketId,
+    refId: new mongoose.Types.ObjectId(ticketId),
     eventType: "COMPLETED",
     occurredAt: new Date(),
     dueAt: null,
@@ -111,18 +115,21 @@ export const completeTicket = async (req: Request, res: Response) => {
 export const listTickets = async (_: Request, res: Response) => {
   try {
     const tickets = await Ticket.find().sort({ _id: -1 }).lean();
-
-    const views = await Promise.all(
-      tickets.map((t) =>
-        buildView("ticket", t._id)   // 👈 pass kind + refId
-      )
-    );
-
+    const views = await Promise.all(tickets.map((t) => buildView("ticket", t._id)));
     return res.json(views);
-  } catch (error) {
-    console.error("listTickets error:", error);
+  } catch (e) {
     return res.status(500).json({ message: "Server error" });
   }
+};
+
+export const getTicketById = async (req: Request, res: Response) => {
+  const id = req.params.id;
+  if (!isValidObjectId(id)) return res.status(400).json({ message: "Invalid ticket ID" });
+
+  const ticket = await Ticket.findById(id).lean();
+  if (!ticket) return res.status(404).json({ message: "Ticket not found" });
+
+  return res.json(await buildView("ticket", new mongoose.Types.ObjectId(id)));
 };
 
 export const getTicketsRaisedByUser = async (req: Request, res: Response) => {
