@@ -1,11 +1,21 @@
+// src/seed/seed.demo.routes.ts
+// ✅ Complete Seeder that:
+// 1) Clears ALL collections every run
+// 2) Creates Users via /auth routes
+// 3) Creates Tickets + Assets (pending/accepted/completed)
+// 4) Adds discussion messages
+// 5) Tunes dueAt to guarantee BOTH:
+//    - /notifications/deadline/:userId shows items (NEAR window)
+//    - /notifications/ended/:userId shows items (OVERDUE) + inserts SLA breach
+// 6) Prints demo outputs + ready URLs
+
 import dotenv from "dotenv";
 dotenv.config();
 
 import mongoose from "mongoose";
 import { User } from "../models/user.model";
 
-// IMPORTANT: adjust this import path to your actual file name
-// Must export: Ticket, Asset, WorkEvent, WorkEventActor, Discussion, SlaAcceptBreach, SlaCompleteBreach
+// IMPORTANT: adjust path if your file name differs
 import {
   Ticket,
   Asset,
@@ -29,6 +39,10 @@ const PASSWORD = "Pass@1234";
 // -----------------------------
 const minMs = (m: number) => m * 60 * 1000;
 
+async function sleep(ms: number) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
 async function http<T>(
   path: string,
   method: "GET" | "POST" = "GET",
@@ -51,38 +65,27 @@ async function http<T>(
   if (!res.ok) {
     throw new Error(`HTTP ${res.status} ${method} ${path} -> ${JSON.stringify(json)}`);
   }
-
   return json as T;
 }
 
 async function pingServer() {
-  try {
-    const res = await fetch(`${BASE_URL}/`, { method: "GET" });
-    console.log(`✅ Server reachable at ${BASE_URL} (status: ${res.status})`);
-  } catch (e: any) {
-    throw new Error(`❌ Cannot reach server at ${BASE_URL}. Start backend first. ${e?.message || e}`);
-  }
+  const res = await fetch(`${BASE_URL}/`, { method: "GET" }).catch(() => null);
+  if (!res) throw new Error(`❌ Cannot reach server at ${BASE_URL}. Start backend first.`);
+  console.log(`✅ Server reachable at ${BASE_URL} (status: ${res.status})`);
 }
 
 // -----------------------------
-// 1) Clear DB every run
+// Clear DB (every run)
 // -----------------------------
 async function clearDatabase() {
   console.log("🧹 Clearing existing data...");
 
   await Promise.all([
-    // users
     User.deleteMany({}),
-
-    // core entities
     Ticket.deleteMany({}),
     Asset.deleteMany({}),
-
-    // event store
     WorkEvent.deleteMany({}),
     WorkEventActor.deleteMany({}),
-
-    // discussion + sla breach
     Discussion.deleteMany({}),
     SlaAcceptBreach.deleteMany({}),
     SlaCompleteBreach.deleteMany({}),
@@ -92,7 +95,7 @@ async function clearDatabase() {
 }
 
 // -----------------------------
-// 2) Register & login via routes (so your auth logic is used)
+// Register + Login via routes
 // -----------------------------
 async function registerAndLogin(userName: string, email: string, role: string) {
   await http("/auth/register", "POST", {
@@ -134,7 +137,7 @@ async function seed() {
   console.log("✅ Users created");
 
   // -----------------------------
-  // Create Tickets & Assets with all states
+  // Create Tickets + Assets
   // -----------------------------
   const TICKET_TYPES = [
     "Laptop Not Working",
@@ -156,9 +159,9 @@ async function seed() {
     "Docking Station Request",
   ];
 
-  // We will create:
-  // Tickets: 18 total -> 6 pending, 6 accepted-only, 6 completed
-  // Assets: 12 total -> 4 pending, 4 accepted-only, 4 completed
+  // Create:
+  // Tickets: 18 -> 6 pending, 6 accepted-only, 6 completed
+  // Assets : 12 -> 4 pending, 4 accepted-only, 4 completed
 
   console.log("Creating Tickets...");
   const ticketIds: string[] = [];
@@ -175,13 +178,11 @@ async function seed() {
     const ticketId = String(created.refId);
     ticketIds.push(ticketId);
 
-    // Accepted-only
     if (i >= 6) {
       const resolver = i % 2 === 0 ? resolver1Id : resolver2Id;
       await http(`/tickets/${ticketId}/accept`, "POST", { accepted_by: resolver });
     }
 
-    // Completed
     if (i >= 12) {
       const resolver = i % 2 === 0 ? resolver1Id : resolver2Id;
       await http(`/tickets/${ticketId}/complete`, "POST", { completed_by: resolver });
@@ -205,13 +206,11 @@ async function seed() {
     const assetId = String(created.refId);
     assetIds.push(assetId);
 
-    // Accepted-only
     if (i >= 4) {
       const resolver = i % 2 === 0 ? resolver1Id : resolver2Id;
       await http(`/assets/${assetId}/accept`, "POST", { accepted_by: resolver });
     }
 
-    // Completed
     if (i >= 8) {
       const resolver = i % 2 === 0 ? resolver1Id : resolver2Id;
       await http(`/assets/${assetId}/complete`, "POST", { completed_by: resolver });
@@ -221,55 +220,54 @@ async function seed() {
   console.log("✅ Assets created:", assetIds.length);
 
   // -----------------------------
-  // Add Discussion Messages (ticket + asset)
+  // Add Discussion Messages
   // -----------------------------
   console.log("Adding discussion messages...");
 
-  // 2 messages on some tickets
-  for (let i = 0; i < 5; i++) {
+  // tickets: 2 messages each (employee + resolver)
+  for (let i = 0; i < 6; i++) {
     const tId = ticketIds[i];
-    const userId = employeeIds[i % employeeIds.length];
+    const empId = employeeIds[i % employeeIds.length];
 
     await http(`/discussion/ticket/${tId}/message`, "POST", {
-      userId,
-      message: `Employee message ${i + 1} for ticket ${tId}`,
+      userId: empId,
+      message: `Employee: I need help on ticket ${tId} (msg ${i + 1})`,
     });
 
     await http(`/discussion/ticket/${tId}/message`, "POST", {
       userId: resolver1Id,
-      message: `Resolver reply ${i + 1} for ticket ${tId}`,
+      message: `Resolver: Acknowledged ticket ${tId}, will check (msg ${i + 1})`,
     });
   }
 
-  // 1 message on some assets
-  for (let i = 0; i < 3; i++) {
+  // assets: 1 message each
+  for (let i = 0; i < 4; i++) {
     const aId = assetIds[i];
-    const userId = employeeIds[(i + 1) % employeeIds.length];
+    const empId = employeeIds[(i + 1) % employeeIds.length];
 
     await http(`/discussion/asset/${aId}/message`, "POST", {
-      userId,
-      message: `Employee message ${i + 1} for asset ${aId}`,
+      userId: empId,
+      message: `Employee: Please process asset request ${aId} (msg ${i + 1})`,
     });
   }
 
   console.log("✅ Discussion messages added");
 
   // -----------------------------
-  // Tune due times to demo Notifications
-  // - Some CREATED dueAt near deadline (accept)
-  // - Some CREATED dueAt overdue (accept breach)
-  // - Some ACCEPTED dueAt near deadline (complete)
-  // - Some ACCEPTED dueAt overdue (complete breach)
-  //
-  // IMPORTANT: SLA breach DB is populated ONLY when /notifications/ended/:userId is called,
-  // because you requested that.
+  // Tune dueAt to GUARANTEE deadline + ended notifications
   // -----------------------------
   console.log("Tuning due times for notification demo...");
 
   const now = new Date();
 
-  // Tickets pending (0..5): tune CREATED dueAt
-  // first 3 overdue, next 3 near deadline
+  // Make demo stable:
+  // - "Near" items => dueAt within next 40 seconds (will show in /deadline)
+  // - "Overdue" items => dueAt 30 seconds ago (will show in /ended)
+  const NEAR_IN_MS = 40 * 1000;
+  const OVERDUE_MS = 30 * 1000;
+
+  // TICKETS pending (0..5): CREATED dueAt
+  // first 3 overdue, next 3 near
   for (let i = 0; i < 6; i++) {
     const refId = new mongoose.Types.ObjectId(ticketIds[i]);
     await WorkEvent.updateOne(
@@ -277,14 +275,16 @@ async function seed() {
       {
         $set: {
           occurredAt: new Date(now.getTime() - minMs(10)),
-          dueAt: i < 3 ? new Date(now.getTime() - minMs(2)) : new Date(now.getTime() + minMs(1)),
+          dueAt: i < 3
+            ? new Date(now.getTime() - OVERDUE_MS)
+            : new Date(now.getTime() + NEAR_IN_MS),
         },
       }
     );
   }
 
-  // Tickets accepted-only (6..11): tune ACCEPTED dueAt
-  // first 3 overdue completion, next 3 near completion
+  // TICKETS accepted-only (6..11): ACCEPTED dueAt
+  // first 3 overdue, next 3 near
   for (let i = 6; i < 12; i++) {
     const refId = new mongoose.Types.ObjectId(ticketIds[i]);
     await WorkEvent.updateOne(
@@ -292,13 +292,16 @@ async function seed() {
       {
         $set: {
           occurredAt: new Date(now.getTime() - minMs(8)),
-          dueAt: i < 9 ? new Date(now.getTime() - minMs(2)) : new Date(now.getTime() + minMs(1)),
+          dueAt: i < 9
+            ? new Date(now.getTime() - OVERDUE_MS)
+            : new Date(now.getTime() + NEAR_IN_MS),
         },
       }
     );
   }
 
-  // Assets pending (0..3): tune CREATED dueAt (2 overdue, 2 near)
+  // ASSETS pending (0..3): CREATED dueAt
+  // first 2 overdue, next 2 near
   for (let i = 0; i < 4; i++) {
     const refId = new mongoose.Types.ObjectId(assetIds[i]);
     await WorkEvent.updateOne(
@@ -306,13 +309,16 @@ async function seed() {
       {
         $set: {
           occurredAt: new Date(now.getTime() - minMs(12)),
-          dueAt: i < 2 ? new Date(now.getTime() - minMs(2)) : new Date(now.getTime() + minMs(1)),
+          dueAt: i < 2
+            ? new Date(now.getTime() - OVERDUE_MS)
+            : new Date(now.getTime() + NEAR_IN_MS),
         },
       }
     );
   }
 
-  // Assets accepted-only (4..7): tune ACCEPTED dueAt (2 overdue, 2 near)
+  // ASSETS accepted-only (4..7): ACCEPTED dueAt
+  // first 2 overdue, next 2 near
   for (let i = 4; i < 8; i++) {
     const refId = new mongoose.Types.ObjectId(assetIds[i]);
     await WorkEvent.updateOne(
@@ -320,7 +326,9 @@ async function seed() {
       {
         $set: {
           occurredAt: new Date(now.getTime() - minMs(7)),
-          dueAt: i < 6 ? new Date(now.getTime() - minMs(2)) : new Date(now.getTime() + minMs(1)),
+          dueAt: i < 6
+            ? new Date(now.getTime() - OVERDUE_MS)
+            : new Date(now.getTime() + NEAR_IN_MS),
         },
       }
     );
@@ -328,17 +336,36 @@ async function seed() {
 
   console.log("✅ Due times tuned");
 
-  // -----------------------------
-  // Trigger SLA breach population by calling notification ended endpoints
-  // (Because breaches are inserted ONLY from notificationForTimeEnded)
-  // -----------------------------
-  console.log("Triggering SLA breach insertion via notifications ended...");
+  // Optional small delay so "minutesLeft" looks good in demo
+  await sleep(1500);
 
-  await http(`/notifications/ended/${adminId}`, "GET");
-  await http(`/notifications/ended/${resolver1Id}`, "GET");
-  await http(`/notifications/ended/${resolver2Id}`, "GET");
+  // -----------------------------
+  // DEMO: Print deadline notifications
+  // -----------------------------
+  console.log("\n📌 Fetching NEAR DEADLINE notifications...");
 
-  console.log("✅ SLA breach DB populated (via ended notifications)");
+  const adminDeadline = await http<any>(`/notifications/deadline/${adminId}`, "GET");
+  console.log("\n--- ADMIN NEAR DEADLINE ---");
+  console.log(JSON.stringify(adminDeadline, null, 2));
+
+  const resolver1Deadline = await http<any>(`/notifications/deadline/${resolver1Id}`, "GET");
+  console.log("\n--- RESOLVER1 NEAR DEADLINE ---");
+  console.log(JSON.stringify(resolver1Deadline, null, 2));
+
+  // -----------------------------
+  // DEMO: Print overdue notifications (and insert SLA breach)
+  // -----------------------------
+  console.log("\n📌 Fetching OVERDUE notifications (and writing SLA breaches)...");
+
+  const adminEnded = await http<any>(`/notifications/ended/${adminId}`, "GET");
+  console.log("\n--- ADMIN OVERDUE ---");
+  console.log(JSON.stringify(adminEnded, null, 2));
+
+  const resolver1Ended = await http<any>(`/notifications/ended/${resolver1Id}`, "GET");
+  console.log("\n--- RESOLVER1 OVERDUE ---");
+  console.log(JSON.stringify(resolver1Ended, null, 2));
+
+  console.log("\n✅ Notification demo complete.\n");
 
   // -----------------------------
   // Print demo cheat sheet
