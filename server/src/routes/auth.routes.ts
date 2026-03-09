@@ -21,6 +21,7 @@ router.get("/profile", authMiddleware, (req, res) => {
 
 
 router.get("/all" , getAllUsers);
+
 // role-based route
 router.get(
   "/admin",

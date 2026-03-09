@@ -33,7 +33,7 @@ export default function AllUsers() {
         setLoading(true);
         setError("");
 
-        const response = await fetch("http://localhost:5000/auth/all");
+        const response = await fetch("http://localhost:8000/auth/all");
         if (!response.ok) {
           throw new Error(`Failed: ${response.status}`);
         }
