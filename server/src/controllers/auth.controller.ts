@@ -118,7 +118,9 @@ export const logoutUser = (req: Request, res: Response) => {
 
 
 export const getUserById = async (req: Request, res: Response) => {
+
   const { id } = req.params;   // Use params, not body
+
   try {
     // Validate ObjectId
     if (!isValidObjectId(id)) {

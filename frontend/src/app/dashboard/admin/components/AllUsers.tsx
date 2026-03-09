@@ -51,6 +51,8 @@ export default function AllUsers() {
   }, []);
 
 
+
+
   // Apply search + role filters
   const filteredUsers = useMemo(() => {
     return allUsers.filter((user) => {
@@ -109,15 +111,27 @@ export default function AllUsers() {
         </div>
       </div>
 
+
+
+
+
       {/* Info */}
       <p>
         Showing <strong>{filteredUsers.length}</strong> of{" "}
         {allUsers.length} users
       </p>
 
+
+
+
+
       {/* Loading / Error */}
       {loading && <p>Loading users…</p>}
       {error && <p style={{ color: "crimson" }}>Error: {error}</p>}
+
+
+
+
 
       {/* User List */}
       {!loading && !error && (
@@ -144,6 +158,9 @@ export default function AllUsers() {
           )}
         </ul>
       )}
+
+
+      
     </div>
   );
 
