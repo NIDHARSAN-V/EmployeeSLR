@@ -37,6 +37,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     checkAuth();
   }, []);
 
+
+  
+
   // login
   const login = async (data: any) => {
     await api.post("/auth/login", data);
