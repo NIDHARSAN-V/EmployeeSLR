@@ -47,7 +47,9 @@ export const notificationForTimeEnded = async (req: Request, res: Response) => {
       ? await notificationsForResolver(userId, false)
       : [];
 
-  // ✅ Update SLA breach DB ONLY here (no duplicates due to unique index + upsert)
+ 
+
+      
   for (const it of items) {
     const refId = new mongoose.Types.ObjectId(it.refId);
 

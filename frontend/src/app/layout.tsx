@@ -20,10 +20,54 @@ function AuthWrapper({ children }: { children: React.ReactNode }) {
     }
   }, [user, loading, path]);
 
+
+
+
+
+
+  
+  useEffect(() => {
+
+    const fetchSLAData = async () => {
+      try {
+        const response = await fetch(
+          "http://localhost:8000/notifications/deadline/69ae8a5ca68f86c36e841f54"
+        );
+        const data = await response.json();
+
+        console.log("SLA Data:", data);
+      } catch (error) {
+        console.error("Error fetching SLA tracking data:", error);
+      }
+    };
+
+ 
+    fetchSLAData();
+
+   
+    const interval = setInterval(fetchSLAData, 10000);
+
+    
+    return () => clearInterval(interval);
+
+  }, []);
+
+
+
+
+
+
+
+
+
   if (loading) return <p>Loading...</p>;
 
   return <>{children}</>;
 }
+
+
+
+
 
 
 
