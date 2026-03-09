@@ -1,6 +1,6 @@
 "use client";
 
-interface TicketFiltersProps {
+interface AssetFiltersProps {
   search: string;
   onSearchChange: (v: string) => void;
   statusFilter: string;
@@ -17,7 +17,7 @@ const ALL_STATUS_OPTIONS: { value: string; label: string }[] = [
   { value: "completed", label: "Completed" },
 ];
 
-export default function TicketFilters({
+export default function AssetFilters({
   search,
   onSearchChange,
   statusFilter,
@@ -25,7 +25,7 @@ export default function TicketFilters({
   statusTabs = ["all", "pending", "accepted", "completed"],
   totalCount,
   filteredCount,
-}: TicketFiltersProps) {
+}: AssetFiltersProps) {
   const options = ALL_STATUS_OPTIONS.filter((o) => statusTabs.includes(o.value));
 
   return (
@@ -41,10 +41,10 @@ export default function TicketFilters({
         </svg>
         <input
           type="text"
-          placeholder="Search tickets..."
+          placeholder="Search assets..."
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
-          className="w-full bg-slate-900 border border-slate-700/60 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 font-mono focus:outline-none focus:border-amber-400/50 focus:ring-1 focus:ring-amber-400/20 transition-colors"
+          className="w-full bg-slate-900 border border-slate-700/60 rounded-lg pl-9 pr-3 py-2 text-sm text-slate-200 placeholder:text-slate-600 font-mono focus:outline-none focus:border-cyan-400/50 focus:ring-1 focus:ring-cyan-400/20 transition-colors"
         />
       </div>
 
@@ -55,7 +55,7 @@ export default function TicketFilters({
             onClick={() => onStatusChange(opt.value)}
             className={`text-[11px] font-mono uppercase tracking-wider px-2.5 py-1.5 rounded transition-all duration-150 ${
               statusFilter === opt.value
-                ? "bg-amber-400 text-slate-950 font-bold"
+                ? "bg-cyan-400 text-slate-950 font-bold"
                 : "text-slate-500 hover:text-slate-300"
             }`}
           >
@@ -65,7 +65,7 @@ export default function TicketFilters({
       </div>
 
       <p className="text-xs font-mono text-slate-600 whitespace-nowrap ml-auto">
-        {filteredCount === totalCount ? `${totalCount} tickets` : `${filteredCount} of ${totalCount}`}
+        {filteredCount === totalCount ? `${totalCount} assets` : `${filteredCount} of ${totalCount}`}
       </p>
     </div>
   );
