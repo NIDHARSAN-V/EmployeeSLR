@@ -1,1 +1,1 @@
-type Status = "pending" | "accepted" | "completed";
+export type Status = "pending" | "accepted" | "completed";

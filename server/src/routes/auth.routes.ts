@@ -23,8 +23,8 @@ router.get("/profile", authMiddleware, (req, res) => {
   res.json({ user: (req as any).user });
 });
 
-
-router.get("/all" , getAllUsers);
+// get all users
+router.get("/all", getAllUsers);
 
 // role-based route
 router.get(
@@ -35,7 +35,7 @@ router.get(
     res.json({ message: "Admin Access Granted" });
   }
 );
-
+// get user by id
 router.get("/:id", authMiddleware, getUserById);
 
 

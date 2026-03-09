@@ -1,15 +1,30 @@
-export const GetAllAssets = async () => {
-    const result = await fetch("http://localhost:8000/assets")
+import api from "./api";
+import { Asset } from "@/types/asset";
+import { Status } from "@/types/status";
 
-    const tickets: Ticket[] = await result.json();
+export const GetAllAssets = async (): Promise<Asset[]> => {
+  const result = await api.get<Asset[]>("/assets");
+  return result.data;
+};
 
-    return tickets;
-}
+export const GetAssetsByStatus = async (status: Status): Promise<Asset[]> => {
+  const result = await api.get<Asset[]>(`/assets/status/${status}`);
+  return result.data;
+};
 
-export const GetAssetsByStatus = async (status: Status) => {
-    const result = await fetch(`http://localhost:8000/assets/status/${status}`)
+export const GetAssetsAcceptedByUser = async (userId: string): Promise<Asset[]> => {
+  const result = await api.get<Asset[]>(`/assets/accepted/${userId}`);
+  return result.data;
+};
 
-    const ticketsByStatus: Ticket[] = await result.json();
 
-    return ticketsByStatus;
-}
+export const AcceptAsset = async (id: string, userId: string): Promise<Asset> => {
+  const result = await api.post<Asset>(`/assets/${id}/accept`, { accepted_by: userId });
+  return result.data;
+};
+
+
+export const CompleteAsset = async (id: string, userId: string): Promise<Asset> => {
+  const result = await api.post<Asset>(`/assets/${id}/complete`, { completed_by: userId });
+  return result.data;
+};

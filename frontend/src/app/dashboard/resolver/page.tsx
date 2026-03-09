@@ -1,12 +1,14 @@
 "use client";
 
+import DashBoardContent from "./_essentials/DashboardContent";
 import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
 
-export default function ResolverDashboard() {
+export default function Dashboard() {
   const { user, loading } = useAuth();
   const router = useRouter();
+
 
   useEffect(() => {
     if (!loading) {
@@ -16,9 +18,15 @@ export default function ResolverDashboard() {
     }
   }, [user, loading, router]);
 
-  if (loading || !user || user.role !== "RESOLVER") {
+  if (loading) {
     return <div>Loading...</div>;
   }
 
-  return <h1>Resolver Dashboard</h1>;
-} 
+  if (!user || user.role !== "RESOLVER") {
+    return null;
+  }
+
+  return (
+      <DashBoardContent/>
+  );
+}

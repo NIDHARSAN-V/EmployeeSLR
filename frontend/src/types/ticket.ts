@@ -1,4 +1,4 @@
-interface Ticket {
+export interface Ticket {
     kind: string,
     refId: string,
     request_type: string,
