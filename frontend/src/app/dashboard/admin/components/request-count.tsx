@@ -1,12 +1,8 @@
-type RequestCountProps = {
-    name: string;
-    ticketCount: number;
-    assetCount: number;
-};
+import RequestCountProps  from "@/types/request-count";
 
 export default function RequestCount({ name, ticketCount, assetCount }: RequestCountProps) {
     return (
-        <div className="relative rounded-lg border border-gray-300 p-14 shadow-sm bg-white m-2">
+        <div className="relative rounded-lg border border-gray-300 p-14 shadow-sm bg-white mt-2">
             <div className="absolute top-4 left-4 font-semibold text-gray-800 text-xl">
                 {name}
             </div>
@@ -17,7 +13,6 @@ export default function RequestCount({ name, ticketCount, assetCount }: RequestC
                         <div className="text-5xl font-bold text-gray-900">{ticketCount}</div>
                         <div className="mt-1 text-sm font-semibold text-gray-500">Tickets</div>
                     </div>
-
                     <div>
                         <div className="text-5xl font-bold text-gray-900">{assetCount}</div>
                         <div className="mt-1 text-sm font-semibold text-gray-500">Assets</div>

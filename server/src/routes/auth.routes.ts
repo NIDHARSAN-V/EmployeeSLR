@@ -3,6 +3,7 @@ import {
   registerUser,
   loginUser,
   logoutUser,
+  getUserById
 } from "../controllers/auth.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorizeRoles } from "../middlewares/role.middleware";
@@ -28,5 +29,8 @@ router.get(
     res.json({ message: "Admin Access Granted" });
   }
 );
+
+router.get("/:id", authMiddleware, getUserById);
+
 
 export default router;
