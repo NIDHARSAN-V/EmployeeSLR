@@ -73,6 +73,7 @@ export const loginUser = async (req: Request, res: Response) => {
 
     res
       .cookie("token", token, { httpOnly: true })
+      .cookie("userId", String(checkUser._id), { httpOnly: false }) // readable by frontend JS
       .json({
         success: true,
         message: "Login successful",
