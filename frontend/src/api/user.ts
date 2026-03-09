@@ -1,16 +1,12 @@
 import { UserModel } from "@/types/user";
+import api from "./api";
 
 export const GetAllUsers = async () => {
-    const result = await fetch("http://localhost:8000/auth/all")
-
-    const users: UserModel[] = await result.json();
-
-    return users;
-}
+  const result = await api.get<UserModel[]>("/auth/all");
+  return result.data;
+};
 
 export const GetUserById = async (id: string) => {
-    const result = await fetch(`http://localhost:8000/auth/${id}`);
-
-    const user: UserModel = await result.json();
-    return user;
-}
+  const result = await api.get<UserModel>(`/auth/${id}`);
+  return result.data;
+};

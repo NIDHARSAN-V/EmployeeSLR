@@ -1,25 +1,53 @@
+"use client";
 import { GetAllTickets, GetTicketsByStatus } from "@/api/ticket";
+import { GetAllAssets, GetAssetsByStatus } from "@/api/asset";
 import ActivityItem from "../_components/ActivityItem";
 import StatsCard from "../_components/StatsCard";
-import { User, UserModel } from "@/types/user";
-import { GetUserById } from "@/api/user";
+import { UserModel } from "@/types/user";
+import { GetAllUsers } from "@/api/user";
+import { useAuth } from "@/context/AuthContext";
+import { useEffect, useState } from "react";
 
-
-export const DashBoardContent = async () => {
-    const pendingTickets: Ticket[] = await GetTicketsByStatus("pending");
-    const allTickets: Ticket[] = await GetAllTickets();
-    // const cookieId = 
-    // const allUser: UserModel[] = await GetUserById();
+export const DashBoardContent = () => {
+    const [users, setUsers] = useState<UserModel[]>([]);
+    const [tickets, setTickets] = useState<Ticket[]>([]);
+    const [assets, setAssets] = useState<Ticket[]>([]);
+    const [loading, setLoading] = useState(true);
+    const { user } = useAuth();
 
     const now = new Date();
     const hour = now.getHours();
     const greeting =
         hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const [usersData, ticketsData, assetsData] = await Promise.all([
+                    GetAllUsers(),
+                    GetAllTickets(),
+                    GetAllAssets(),
+                ]);
+                setUsers(usersData);
+                setTickets(ticketsData);
+                setAssets(assetsData);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchData();
+    }, []);
+
+    if (loading) return <div>Loading...</div>;
+
+    const pendingTickets = tickets.filter((t) => t.status === "pending");
+
     return (
         <div className="min-h-screen bg-slate-950 text-slate-100 p-6 lg:p-8 font-sans">
             {/* Header */}
             <div className="mb-8">
-
                 <h1 className="text-2xl lg:text-3xl font-mono text-slate-100 tracking-tight">
                     {greeting}, rd.
                 </h1>
@@ -45,10 +73,9 @@ export const DashBoardContent = async () => {
 
             {/* Main Content */}
             <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                {/* Activity Feed — takes 2 cols */}
+                {/* Activity Feed */}
                 <div className="xl:col-span-2">
                     <div className="bg-slate-900 border border-slate-700/60 rounded-lg overflow-hidden">
-                        {/* Header */}
                         <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700/60">
                             <div className="flex items-center gap-2">
                                 <span className="text-xs font-mono uppercase tracking-widest text-slate-400">
@@ -66,7 +93,6 @@ export const DashBoardContent = async () => {
                             </a>
                         </div>
 
-                        {/* List */}
                         <div className="p-2 divide-y divide-slate-800/60">
                             {pendingTickets.map((item) => (
                                 <ActivityItem key={item.refId} {...item} />
@@ -77,7 +103,6 @@ export const DashBoardContent = async () => {
 
                 {/* Right column */}
                 <div className="flex flex-col gap-6">
-                    {/* My Workload */}
                     <div className="bg-slate-900 border border-slate-700/60 rounded-lg overflow-hidden">
                         <div className="px-4 py-3 border-b border-slate-700/60">
                             <span className="text-xs font-mono uppercase tracking-widest text-slate-400">
@@ -86,8 +111,8 @@ export const DashBoardContent = async () => {
                         </div>
                         <div className="p-4 space-y-3">
                             {[
-                                { label: "Open Tickets", current: 3, max: 10, color: "bg-violet-400" },
-                                { label: "Asset Requests", current: 1, max: 5, color: "bg-cyan-400" },
+                                { label: "Open Tickets", current: tickets.length, max: 10, color: "bg-violet-400" },
+                                { label: "Asset Requests", current: assets.length, max: 5, color: "bg-cyan-400" },
                                 { label: "SLA Compliance", current: 87, max: 100, color: "bg-emerald-400", percent: true },
                             ].map(({ label, current, max, color, percent }) => (
                                 <div key={label}>

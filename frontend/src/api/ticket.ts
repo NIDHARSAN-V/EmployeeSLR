@@ -1,15 +1,11 @@
+import api from "./api";
+
 export const GetAllTickets = async () => {
-    const result = await fetch("http://localhost:8000/tickets")
-
-    const tickets: Ticket[] = await result.json();
-
-    return tickets;
-}
+  const result = await api.get<Ticket[]>("/tickets");
+  return result.data;
+};
 
 export const GetTicketsByStatus = async (status: Status) => {
-    const result = await fetch(`http://localhost:8000/tickets/status/${status}`)
-
-    const ticketsByStatus: Ticket[] = await result.json();
-
-    return ticketsByStatus;
-}
+  const result = await api.get<Ticket[]>(`/tickets/status/${status}`);
+  return result.data;
+};
