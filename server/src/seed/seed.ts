@@ -26,7 +26,7 @@ import {
   SlaCompleteBreach,
 } from "../models/resource.model";
 
-const BASE_URL = process.env.SEED_BASE_URL || "http://127.0.0.1:8000";
+const BASE_URL = process.env.SEED_BASE_URL || "http://127.0.0.1:5000";
 const MONGO_URL =
   process.env.MONGO_URL ||
   process.env.MONGO_URI ||

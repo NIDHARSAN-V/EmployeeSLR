@@ -9,6 +9,18 @@ import {
   upsertCompleteBreach,
 } from "../service/resourceservice";
 
+
+
+
+
+
+
+
+
+
+
+
+
 export const notificationForDeadline = async (req: Request, res: Response) => {
   const userId = req.params.userId;
   if (!isValidObjectId(userId)) return res.status(400).json({ message: "Invalid userId" });
@@ -25,6 +37,19 @@ export const notificationForDeadline = async (req: Request, res: Response) => {
 
   return res.json({ mode: "NEAR_DEADLINE", role, items });
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const notificationForTimeEnded = async (req: Request, res: Response) => {
   const userId = req.params.userId;
@@ -54,3 +79,11 @@ export const notificationForTimeEnded = async (req: Request, res: Response) => {
 
   return res.json({ mode: "OVERDUE", role, items });
 };
+
+
+
+
+
+
+
+

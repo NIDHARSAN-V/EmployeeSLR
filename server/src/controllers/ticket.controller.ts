@@ -12,6 +12,8 @@ import {
   ensureDiscussion,
 } from "../service/resourceservice";
 
+
+
 export const createTicket = async (req: Request, res: Response) => {
   const { request_type, raised_by } = req.body;
 
@@ -46,6 +48,13 @@ export const createTicket = async (req: Request, res: Response) => {
   return res.status(201).json(await buildView("ticket", ticket._id));
 };
 
+
+
+
+
+
+
+
 export const acceptTicket = async (req: Request, res: Response) => {
   const ticketId = req.params.id;
   const { accepted_by } = req.body;
@@ -78,6 +87,18 @@ export const acceptTicket = async (req: Request, res: Response) => {
 
   return res.json(await buildView("ticket", new mongoose.Types.ObjectId(ticketId)));
 };
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const completeTicket = async (req: Request, res: Response) => {
   const ticketId = req.params.id;
@@ -112,6 +133,17 @@ export const completeTicket = async (req: Request, res: Response) => {
   return res.json(await buildView("ticket", new mongoose.Types.ObjectId(ticketId)));
 };
 
+
+
+
+
+
+
+
+
+
+
+
 export const listTickets = async (_: Request, res: Response) => {
   try {
     const tickets = await Ticket.find().sort({ _id: -1 }).lean();
@@ -122,6 +154,14 @@ export const listTickets = async (_: Request, res: Response) => {
   }
 };
 
+
+
+
+
+
+
+
+
 export const getTicketById = async (req: Request, res: Response) => {
   const id = req.params.id;
   if (!isValidObjectId(id)) return res.status(400).json({ message: "Invalid ticket ID" });
@@ -131,6 +171,19 @@ export const getTicketById = async (req: Request, res: Response) => {
 
   return res.json(await buildView("ticket", new mongoose.Types.ObjectId(id)));
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const getTicketsRaisedByUser = async (req: Request, res: Response) => {
   const userId = req.params.userId;
@@ -148,6 +201,34 @@ export const getTicketsRaisedByUser = async (req: Request, res: Response) => {
   return res.json(out);
 };
 
+
+
+
+
+
+
+export const getTicketsAcceptedByUser = async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+  if (!isValidObjectId(userId)) return res.status(400).json({ message: "Invalid userId" });
+
+  const accepted = await WorkEvent.find({ kind: "ticket", eventType: "ACCEPTED" }).lean();
+  const out: any[] = [];
+
+  for (const ev of accepted) {
+    const actor = await WorkEventActor.findOne({ eventId: ev._id, role: "accepted_by", userId }).lean();
+    if (!actor) continue;
+    out.push(await buildView("ticket", ev.refId));
+  }
+
+  return res.json(out);
+};
+
+
+
+
+
+
+
 export const getTicketsSolvedByUser = async (req: Request, res: Response) => {
   const userId = req.params.userId;
   if (!isValidObjectId(userId)) return res.status(400).json({ message: "Invalid userId" });
@@ -163,6 +244,10 @@ export const getTicketsSolvedByUser = async (req: Request, res: Response) => {
 
   return res.json(out);
 };
+
+
+
+
 
 export const getTicketsByStatus = async (req: Request, res: Response) => {
   const status = req.params.status;
