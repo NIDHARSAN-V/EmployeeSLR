@@ -8,7 +8,7 @@ export interface User {
 
 export interface UserModel {
   id: string;
-  name: string;
+  userName: string;
   role: Role;
   email: string;
 }

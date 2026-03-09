@@ -1,4 +1,6 @@
-interface Asset {
+import { Status } from "./status";
+
+export interface Asset {
   kind: string,
   refId: string,
   request_type: string,
@@ -6,7 +8,7 @@ interface Asset {
   raised_by: string,
   accepted_by: string | null,
   completed_by: string | null,
-  createdAt: string | null,
+  createdAt: string,
   acceptedAt: string | null,
   completedAt: string| null,
   acceptDueAt: string | null,
