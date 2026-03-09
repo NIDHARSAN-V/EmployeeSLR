@@ -123,8 +123,8 @@ export default function EmployeePage() {
           <AssetForm userId={userId} refreshTickets={fetchTickets} />
         )}
 
-        {active === "log" && <LogView tickets={tickets} />}
-        {active === "log" && <LogView tickets={assets} />}
+        {active === "log" && <LogView tickets={tickets} userId={userId} />}
+{active === "log" && <LogView tickets={assets} userId={userId} />}
 
         {active === "notifications" && <NotificationView tickets={tickets} />}
       </div>
