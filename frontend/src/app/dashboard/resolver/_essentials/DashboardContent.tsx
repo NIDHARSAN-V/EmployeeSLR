@@ -1,14 +1,15 @@
 import { GetAllTickets, GetTicketsByStatus } from "@/api/ticket";
 import ActivityItem from "../_components/ActivityItem";
 import StatsCard from "../_components/StatsCard";
-import { User } from "@/types/user";
+import { User, UserModel } from "@/types/user";
+import { GetUserById } from "@/api/user";
 
 
 export const DashBoardContent = async () => {
     const pendingTickets: Ticket[] = await GetTicketsByStatus("pending");
     const allTickets: Ticket[] = await GetAllTickets();
-
-    const 
+    // const cookieId = 
+    // const allUser: UserModel[] = await GetUserById();
 
     const now = new Date();
     const hour = now.getHours();
