@@ -1,2 +1,21 @@
 AuthPart - https://chatgpt.com/s/t_6996088611488191b7fdf7996ba0befb
 
+
+
+
+
+
+
+
+
+
+Time --
+   populate <-> buildView *
+
+   Auto assign -- queue 
+   
+   SLA tracking -- after this *
+                1.  Manger action not accepted
+                            - reassign or make it high priority
+                2.  Manger action on not completed 
+                            - disscussion and reason 

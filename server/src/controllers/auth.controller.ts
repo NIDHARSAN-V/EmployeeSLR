@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { User } from "../models/user.model";
 import { generateToken } from "../utils/generateToken";
 import { Role } from "../types/user.types";
+import { isValidObjectId } from "../service/resourceservice";
 
 // REGISTER
 export const registerUser = async (req: Request, res: Response) => {
@@ -44,8 +45,11 @@ export const registerUser = async (req: Request, res: Response) => {
 
 // LOGIN
 export const loginUser = async (req: Request, res: Response) => {
+  
   const { email, password } = req.body;
+  console.log(email)
 
+  
   try {
     const checkUser = await User.findOne({ email });
 
@@ -92,10 +96,65 @@ export const loginUser = async (req: Request, res: Response) => {
   }
 };
 
+
+export const getAllUsers = async (req: Request, res: Response) => { 
+  try {
+    const users = await User.find({ role: { $ne: Role.ADMIN } }).select("-password").lean();
+    res.status(200).json(users);
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  } 
+}
+
+
 // LOGOUT
 export const logoutUser = (req: Request, res: Response) => {
   res.clearCookie("token").json({
     success: true,
     message: "Logged out successfully",
   });
+};
+
+
+
+export const getUserById = async (req: Request, res: Response) => {
+  const { id } = req.params;   // Use params, not body
+
+  try {
+    // Validate ObjectId
+    if (isValidObjectId(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID format",
+      });
+    }
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "User found",
+      user: {
+        id: user._id,
+        name: user.userName,
+        email: user.email,
+        role: user.role,
+      },
+    });
+
+  } catch (error) {
+    console.error("Error fetching user:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error while fetching user",
+    });
+  }
 };
