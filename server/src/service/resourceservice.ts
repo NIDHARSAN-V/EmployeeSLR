@@ -40,6 +40,9 @@ export async function getCore(kind: WorkKind, refId: mongoose.Types.ObjectId) {
   return kind === "ticket" ? Ticket.findById(refId).lean() : Asset.findById(refId).lean();
 }
 
+
+
+
 // ---------------- buildView (NO discussion included) ----------------
 export async function buildView(kind: WorkKind, refId: mongoose.Types.ObjectId) {
   const [core, created, accepted, completed] = await Promise.all([
@@ -106,6 +109,20 @@ function nearRange() {
   return { now, end };
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * Returns overdue or near-deadline notifications for ADMIN:
  * - ACCEPT_DEADLINE : CREATED dueAt crossed/near and not accepted
@@ -134,6 +151,11 @@ export async function notificationsForAdmin(isNear: boolean) {
       });
     }
 
+
+
+
+
+
     // B) pending complete: ACCEPTED dueAt and no COMPLETED
     const acceptedDue = await WorkEvent.find({ kind, eventType: "ACCEPTED", dueAt: dueFilter }).lean();
     for (const ae of acceptedDue) {
@@ -152,6 +174,18 @@ export async function notificationsForAdmin(isNear: boolean) {
 
   return items;
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 /**
  * Resolver sees ONLY:

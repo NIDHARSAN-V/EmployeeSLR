@@ -16,6 +16,13 @@ const ticketSchema = new Schema<ITicket>(
 );
 export const Ticket = mongoose.model<ITicket>("Ticket", ticketSchema);
 
+
+
+
+
+
+
+
 // -------------------- Asset --------------------
 export interface IAsset extends Document {
   request_type: string;
@@ -27,6 +34,16 @@ const assetSchema = new Schema<IAsset>(
   { versionKey: false }
 );
 export const Asset = mongoose.model<IAsset>("Asset", assetSchema);
+
+
+
+
+
+
+
+
+
+
 
 // -------------------- WorkEvent (deadline = dueAt) --------------------
 export interface IWorkEvent extends Document {
@@ -56,6 +73,17 @@ workEventSchema.index({ eventType: 1, dueAt: 1 });
 
 export const WorkEvent = mongoose.model<IWorkEvent>("WorkEvent", workEventSchema);
 
+
+
+
+
+
+
+
+
+
+
+
 // -------------------- WorkEventActor --------------------
 export interface IWorkEventActor extends Document {
   eventId: mongoose.Types.ObjectId;
@@ -75,6 +103,18 @@ workEventActorSchema.index({ eventId: 1, role: 1 }, { unique: true });
 workEventActorSchema.index({ userId: 1 });
 
 export const WorkEventActor = mongoose.model<IWorkEventActor>("WorkEventActor", workEventActorSchema);
+
+
+
+
+
+
+
+
+
+
+
+
 
 // ===================== Discussion / Comments =====================
 export interface IDiscussionMessage {
@@ -117,6 +157,20 @@ export interface ISlaAcceptBreach extends Document {
   breachedAt: Date;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 const slaAcceptBreachSchema = new Schema<ISlaAcceptBreach>(
   {
     kind: { type: String, enum: ["ticket", "asset"], required: true },
@@ -141,6 +195,17 @@ export interface ISlaCompleteBreach extends Document {
   dueAt: Date;
   breachedAt: Date;
 }
+
+
+
+
+
+
+
+
+
+
+
 
 const slaCompleteBreachSchema = new Schema<ISlaCompleteBreach>(
   {

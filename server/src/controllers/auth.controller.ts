@@ -44,8 +44,11 @@ export const registerUser = async (req: Request, res: Response) => {
 
 // LOGIN
 export const loginUser = async (req: Request, res: Response) => {
+  
   const { email, password } = req.body;
+  console.log(email)
 
+  
   try {
     const checkUser = await User.findOne({ email });
 
@@ -91,6 +94,17 @@ export const loginUser = async (req: Request, res: Response) => {
     });
   }
 };
+
+
+export const getAllUsers = async (req: Request, res: Response) => { 
+  try {
+    const users = await User.find({ role: { $ne: Role.ADMIN } }).select("-password").lean();
+    res.status(200).json(users);
+  } catch {
+    res.status(500).json({ message: "Server error" });
+  } 
+}
+
 
 // LOGOUT
 export const logoutUser = (req: Request, res: Response) => {
