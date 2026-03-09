@@ -38,14 +38,12 @@ export const addMessage = async (req: Request, res: Response) => {
 
   const refId = new mongoose.Types.ObjectId(id);
 
-  // ensure doc exists
   await Discussion.updateOne(
     { kind, refId },
     { $setOnInsert: { kind, refId, messages: [] } },
     { upsert: true }
   );
 
-  // push message
   await Discussion.updateOne(
     { kind, refId },
     { $push: { messages: { userId, message: message.trim(), createdAt: new Date() } } }

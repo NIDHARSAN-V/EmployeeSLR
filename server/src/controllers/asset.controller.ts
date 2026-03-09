@@ -38,41 +38,12 @@ export const createAsset = async (req: Request, res: Response) => {
     dueAt,
   });
 
-
-  //one cron for acc check and another one for completion check 
-
-  
-
-
-  
-   
-
-
-  ///SLA create --------  
-  // if suppose no one is accepting the ticket while with cronjob, then after ACCEPT_SLA_MIN minutes
-  // then   create SLA accept breach 
-  // then   raise it to admin
-  //-------------------------
-
-
-
-
-  
-
   await WorkEventActor.create({ eventId: ev._id, userId: raised_by, role: "raised_by" });
 
   await ensureDiscussion("asset", asset._id);
 
   return res.status(201).json(await buildView("asset", asset._id));
 };
-
-
-
-
-
-
-
-
 
 
 
@@ -105,29 +76,10 @@ export const acceptAsset = async (req: Request, res: Response) => {
   });
 
 
-
-
-
-    ///SLA update  --------  
-  // if suppose resolver accepts  the ticket while with cronjob, then after COMPLETE_SLA_MIN minutes
-  // then   create SLA complete breach 
-  // then   raise it to admin along with who accepted and when accepted
-  //-------------------------
-
-
-
-
   await WorkEventActor.create({ eventId: ev._id, userId: accepted_by, role: "accepted_by" });
 
   return res.json(await buildView("asset", new mongoose.Types.ObjectId(assetId)));
 };
-
-
-
-
-
-
-
 
 
 
@@ -166,17 +118,7 @@ export const completeAsset = async (req: Request, res: Response) => {
 };
 
 
-
-
-
-
-
-
-
-
-
-
-
+//get asset
 export const listAssets = async (_: Request, res: Response) => {
   try {
     const assets = await Asset.find().sort({ _id: -1 }).lean();
