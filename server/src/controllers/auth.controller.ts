@@ -118,11 +118,12 @@ export const logoutUser = (req: Request, res: Response) => {
 
 
 export const getUserById = async (req: Request, res: Response) => {
-  const { id } = req.params;   
+
+  const { id } = req.params;   // Use params, not body
 
   try {
     // Validate ObjectId
-    if (isValidObjectId(id)) {
+    if (!isValidObjectId(id)) {
       return res.status(400).json({
         success: false,
         message: "Invalid user ID format",
@@ -143,7 +144,7 @@ export const getUserById = async (req: Request, res: Response) => {
       message: "User found",
       user: {
         id: user._id,
-        name: user.userName,
+        userName: user.userName,
         email: user.email,
         role: user.role,
       },
