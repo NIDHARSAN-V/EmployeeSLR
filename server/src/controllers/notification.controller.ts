@@ -3,22 +3,16 @@ import mongoose from "mongoose";
 import {
   isValidObjectId,
   getRole,
-  notificationsForAdmin,
-  notificationsForResolver,
-  upsertAcceptBreach,
-  upsertCompleteBreach,
 } from "../service/resourceservice";
 
-
-
-
-
-
-
-
-
-
-
+import{
+  notificationsForAdmin,
+  notificationsForResolver,
+  slaBreached,
+  slaNear,
+  upsertAcceptBreach,
+  upsertCompleteBreach,
+} from "../service/slaservice";
 
 
 export const notificationForDeadline = async (req: Request, res: Response) => {
@@ -37,18 +31,6 @@ export const notificationForDeadline = async (req: Request, res: Response) => {
 
   return res.json({ mode: "NEAR_DEADLINE", role, items });
 };
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 export const notificationForTimeEnded = async (req: Request, res: Response) => {
@@ -86,6 +68,24 @@ export const notificationForTimeEnded = async (req: Request, res: Response) => {
 
 
 
+export const slaBreachedTickets = async (req: Request, res: Response) => {
+  const items = await slaBreached("ticket");
+  return res.json({ type: "ticket", mode: "BREACHED", items });
+};
 
+export const slaBreachedAssets = async (req: Request, res: Response) => {
+  const items = await slaBreached("asset");
+  return res.json({ type: "asset", mode: "BREACHED", items });
+};
+
+export const slaNearTickets = async (req: Request, res: Response) => {
+  const items = await slaNear("ticket");
+  return res.json({ type: "ticket", mode: "NEAR", items });
+};
+
+export const slaNearAssets = async (req: Request, res: Response) => {
+  const items = await slaNear("asset");
+  return res.json({ type: "asset", mode: "NEAR", items });
+};
 
 
