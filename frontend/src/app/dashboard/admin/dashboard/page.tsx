@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import AllUsers from "../components/AllUsers";
+import SLATracking from "../components/SLATracking";
 // import Settings from "../components/Settings";
 // import Reports from "../components/Reports";
-
 type TabKey = "users" | "settings" | "reports";
 
 const NAV_ITEMS: { key: TabKey; label: string }[] = [
   { key: "users", label: "All Users" },
-  { key: "settings", label: "Settings" },
+  { key: "slatracking", label: "SLATracking" },
   { key: "reports", label: "Reports" },
 ];
 
@@ -24,8 +24,8 @@ export default function Dashboard() {
     switch (active) {
       case "users":
         return <AllUsers />;
-    //   case "settings":
-    //     return <Settings />;
+      case "slatracking":
+        return <SLATracking />;
     //   case "reports":
     //     return <Reports />;
       default:
