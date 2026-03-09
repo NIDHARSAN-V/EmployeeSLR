@@ -20,6 +20,10 @@ import {
   NEAR_DUE_MIN
 } from "./resourceservice";
 
+
+
+
+
 export async function notificationsForAdmin(isNear: boolean) {
   const { now, end } = nearRange();
   const dueFilter = isNear ? { $gte: now, $lte: end } : { $lt: now };
@@ -63,6 +67,9 @@ export async function notificationsForAdmin(isNear: boolean) {
 
 
 
+
+
+
 export async function slaBreached(kind: WorkKind) {
 
   const now = new Date();
@@ -89,6 +96,7 @@ export async function slaBreached(kind: WorkKind) {
 
     items.push({
       ...view,
+      eventId: ce._id,
       deadlineType: "ACCEPT_DEADLINE",
       isOverdue: true
     });
@@ -116,6 +124,7 @@ export async function slaBreached(kind: WorkKind) {
 
     items.push({
       ...view,
+      eventId: ae._id,
       deadlineType: "COMPLETE_DEADLINE",
       isOverdue: true
     });
