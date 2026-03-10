@@ -1,16 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import AllUsers from "./AllUsers";
+import { useState } from "react";
+import AllUsers from "../_essentials/AllUsers";
 import SLATracking from "./SLATracking";
+import DashboardCard from "./DashboardCard";
+import SideBar from "../_essentials/SideBar";
 // import Settings from "../components/Settings";
 // import Reports from "../components/Reports";
-type TabKey = "users" | "slatracking" | "reports";
+type TabKey = "users" | "slatracking" | "reports" | "dashboard" | "tickets" | "assets";
 
 const NAV_ITEMS: { key: TabKey; label: string }[] = [
-  { key: "users", label: "All Users" },
+  { key: "dashboard", label: "Dashboard" },
+  { key: "tickets", label: "Tickets Management" },
+  { key: "assets", label: "Assets Management" },
   { key: "slatracking", label: "SLATracking" },
-  { key: "reports", label: "Reports" },
+  { key: "users", label: "Users" },
 ];
 
 export default function Dashboard() {
@@ -22,6 +26,12 @@ export default function Dashboard() {
 
   const renderContent = () => {
     switch (active) {
+      case "dashboard":
+        return <DashboardCard />;
+      case "tickets":
+        return <div>Tickets Management Content</div>;
+      case "assets":
+        return <div>Assets Management Content</div>;
       case "users":
         return <AllUsers />;
       case "slatracking":
@@ -32,11 +42,12 @@ export default function Dashboard() {
         return null;
     }
   };
+  
 
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <aside className="w-64 border-r bg-white">
+      {/* <aside className="w-64 border-r bg-white">
         <div className="p-4 border-b">
           <h1 className="text-xl font-semibold">Admin Dashboard</h1>
         </div>
@@ -56,7 +67,9 @@ export default function Dashboard() {
             </button>
           ))}
         </nav>
-      </aside>
+      </aside> */}
+      {/* <SideBar /> */}
+
 
       {/* Main content */}
       <main className="flex-1 p-6">{renderContent()}</main>

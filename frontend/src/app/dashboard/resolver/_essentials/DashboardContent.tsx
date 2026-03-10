@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import { Asset } from "@/types/asset";
 import { Ticket } from "@/types/ticket";
 
-export const DashBoardContent = () => {
+export const  DashBoardContent = () => {
   const [currUser, setCurrUser] = useState<UserModel>();
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);

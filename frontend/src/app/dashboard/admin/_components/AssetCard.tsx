@@ -1,15 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Ticket } from "@/types/ticket";
+import { useState, useEffect } from "react";
+import { Asset } from "@/types/asset";
 import { GetUserById } from "@/api/user";
 
-interface TicketCardProps {
-  ticket: Ticket;
+interface AssetCardProps {
+  asset: Asset;
   onAccept?: (id: string) => void;
   onComplete?: (id: string) => void;
-  expanded: boolean;
-  onToggle: () => void;
 }
 
 const statusConfig: Record<string, { label: string; color: string }> = {
@@ -24,30 +22,19 @@ const statusAccent: Record<string, string> = {
   completed: "border-l-emerald-400/40",
 };
 
-export default function TicketCard({
-  ticket,
+export default function AssetCard({
+  asset,
   onAccept,
   onComplete,
-  expanded,
-  onToggle,
-}: TicketCardProps) {
-  const [raisedByName, setRaisedByName] = useState<string>("");
-  const sc = statusConfig[ticket.status] ?? statusConfig["pending"];
-  const accent = statusAccent[ticket.status] ?? "border-l-slate-700";
+}: AssetCardProps) {
+  const [expanded, setExpanded] = useState(false);
+  const [raisedByName, setRaisedByName] = useState<string>(asset.raised_by);
+  const [acceptedByName, setAcceptedByName] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const user = await GetUserById(ticket.raised_by);
-        setRaisedByName(user.userName);
-      } catch (e) {
-        console.error("Error for ticket card is:", e);
-      }
-    };
-    fetchData();
-  }, [ticket.raised_by]);
+  const sc = statusConfig[asset.status] ?? statusConfig["pending"];
+  const accent = statusAccent[asset.status] ?? "border-l-slate-700";
 
-  const formattedDate = new Date(ticket.createdAt).toLocaleDateString("en-US", {
+  const formattedDate = new Date(asset.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -56,12 +43,12 @@ export default function TicketCard({
   useEffect(() => {
     const fetchUserNames = async () => {
       try {
-        if (ticket.raised_by) {
-          const user = await GetUserById(ticket.raised_by);
+        if (asset.raised_by) {
+          const user = await GetUserById(asset.raised_by);
           setRaisedByName(user.userName);
         }
-        if (ticket.accepted_by) {
-          const user = await GetUserById(ticket.accepted_by);
+        if (asset.accepted_by) {
+          const user = await GetUserById(asset.accepted_by);
           setAcceptedByName(user.userName);
         }
       } catch (error) {
@@ -70,22 +57,27 @@ export default function TicketCard({
     };
 
     fetchUserNames();
-  }, [ticket.raised_by, ticket.accepted_by]);
+  }, [asset.raised_by, asset.accepted_by]);
 
   return (
     <div
       className={`bg-[#0d1117] border border-slate-800 border-l-2 ${accent} hover:border-slate-700 transition-all duration-200`}
     >
       <div className="p-4">
+        {/* Welcome Row */}
         <div className="flex items-start justify-between gap-2 mb-3">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-[10px] tracking-widest uppercase">
-                {ticket.kind}
+              <span className="text-[10px] text-slate-600 tracking-widest uppercase">
+                {asset.kind}
+              </span>
+              <span className="text-[10px] text-slate-700">·</span>
+              <span className="text-[10px] text-slate-600 tracking-wider">
+                #{asset.refId}
               </span>
             </div>
-            <h3 className="text-sm font-medium leading-snug">
-              {ticket.request_type}
+            <h3 className="text-sm font-medium text-slate-200 leading-snug">
+              {asset.request_type}
             </h3>
           </div>
           <span
@@ -95,12 +87,13 @@ export default function TicketCard({
           </span>
         </div>
 
-        <div className="flex items-center gap-4 text-[11px] mb-4">
+        {/* Sub welcome Row */}
+        <div className="flex items-center gap-4 text-[11px] text-slate-600 mb-4">
           <span>{formattedDate}</span>
-          {ticket.completeDueAt && (
+          {asset.completeDueAt && (
             <span className="text-amber-500/60">
               Due{" "}
-              {new Date(ticket.completeDueAt).toLocaleDateString("en-US", {
+              {new Date(asset.completeDueAt).toLocaleDateString("en-US", {
                 month: "short",
                 day: "numeric",
               })}
@@ -108,64 +101,52 @@ export default function TicketCard({
           )}
         </div>
 
+        {/* Hide / Unhide*/}
         <div className="flex items-center gap-3 pt-3 border-t border-slate-800/80">
           <button
-            onClick={onToggle}
-            className="text-[10px] uppercase tracking-widest hover:text-slate-400 transition-colors"
+            onClick={() => setExpanded(!expanded)}
+            className="text-[10px] uppercase tracking-widest text-slate-600 hover:text-slate-400 transition-colors"
           >
             {expanded ? "Hide" : "Details"}
           </button>
+
           <div className="flex-1" />
-          {ticket.status === "pending" && (
-            <button
-              onClick={() => onAccept?.(ticket.refId)}
-              className="text-[15px] uppercase tracking-widest text-sky-400 hover:text-sky-300 transition-colors"
-            >
-              Mark Accept →
-            </button>
-          )}
-          {ticket.status === "accepted" && (
-            <button
-              onClick={() => onComplete?.(ticket.refId)}
-              className="text-[15px] uppercase tracking-widest text-emerald-400 hover:text-black transition-colors hover:font-bold hover:border-emerald-400/60 hover:border-2 hover:bg-emerald-400"
-            >
-              Mark Complete →
-            </button>
-          )}
         </div>
 
+        {/* Expanded details */}
         {expanded && (
           <div className="mt-4 pt-4 border-t border-slate-800/80 grid grid-cols-2 gap-x-6 gap-y-3">
             {[
               { label: "Raised By", value: raisedByName },
+              { label: "Accepted By", value: acceptedByName ?? "—" },
               { label: "Created", value: formattedDate },
               {
                 label: "Accepted At",
-                value: ticket.acceptedAt
-                  ? new Date(ticket.acceptedAt).toLocaleDateString("en-US", {
+                value: asset.acceptedAt
+                  ? new Date(asset.acceptedAt).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
                     })
-                  : "—",
+                  : "-",
               },
               {
                 label: "Accept Due",
-                value: ticket.acceptDueAt
-                  ? new Date(ticket.acceptDueAt).toLocaleDateString("en-US", {
+                value: asset.acceptDueAt
+                  ? new Date(asset.acceptDueAt).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                     })
-                  : "—",
+                  : "-",
               },
               {
                 label: "Complete Due",
-                value: ticket.completeDueAt
-                  ? new Date(ticket.completeDueAt).toLocaleDateString("en-US", {
+                value: asset.completeDueAt
+                  ? new Date(asset.completeDueAt).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                     })
-                  : "—",
+                  : "-",
               },
             ].map(({ label, value }) => (
               <div key={label}>

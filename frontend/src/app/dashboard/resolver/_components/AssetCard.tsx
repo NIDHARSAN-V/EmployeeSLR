@@ -53,6 +53,25 @@ export default function AssetCard({
     day: "numeric",
   });
 
+  useEffect(() => {
+    const fetchUserNames = async () => {
+      try {
+        if (asset.raised_by) {
+          const user = await GetUserById(asset.raised_by);
+          setRaisedByName(user.userName);
+        }
+        if (asset.accepted_by) {
+          const user = await GetUserById(asset.accepted_by);
+          setAcceptedByName(user.userName);
+        }
+      } catch (error) {
+        console.error("Error fetching user names:", error);
+      }
+    };
+
+    fetchUserNames();
+  }, [asset.raised_by, asset.accepted_by]);
+
   return (
     <div
       className={`bg-[#0d1117] border border-slate-800 border-l-2 ${accent} hover:border-slate-700 transition-all duration-200`}
@@ -96,9 +115,7 @@ export default function AssetCard({
           >
             {expanded ? "Hide" : "Details"}
           </button>
-
           <div className="flex-1" />
-
           {asset.status === "pending" && (
             <button
               onClick={() => onAccept?.(asset.refId)}
