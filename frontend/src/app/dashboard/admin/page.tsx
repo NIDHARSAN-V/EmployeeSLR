@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import Dashboard from "./dashboard/page";
+import Dashboard from "./_components/Dashboard";
 ;
 
 export default function AdminDashboard() {
