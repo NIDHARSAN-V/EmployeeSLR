@@ -3,11 +3,8 @@ import {
   registerUser,
   loginUser,
   logoutUser,
-
   getUserById,
-
-  getAllUsers
-
+  getAllUsers,
 } from "../controllers/auth.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorizeRoles } from "../middlewares/role.middleware";
@@ -27,16 +24,10 @@ router.get("/profile", authMiddleware, (req, res) => {
 router.get("/all", getAllUsers);
 
 // role-based route
-router.get(
-  "/admin",
-  authMiddleware,
-  authorizeRoles(Role.ADMIN),
-  (req, res) => {
-    res.json({ message: "Admin Access Granted" });
-  }
-);
+router.get("/admin", authMiddleware, authorizeRoles(Role.ADMIN), (req, res) => {
+  res.json({ message: "Admin Access Granted" });
+});
 // get user by id
 router.get("/:id", authMiddleware, getUserById);
-
 
 export default router;
