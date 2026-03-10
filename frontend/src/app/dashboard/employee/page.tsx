@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import EmployeePage from "./components/EmployeePage";
+import EmployeePage from "./Logs/page";
 
 export default function EmployeeDashboard() {
   const { user, loading } = useAuth();
