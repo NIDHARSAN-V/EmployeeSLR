@@ -6,6 +6,7 @@ import HomeView from "./HomeView";
 import TicketForm from "./TicketForm";
 import AssetForm from "./AssetForm";
 import LogView from "./LogView";
+import { apiUrl } from "@/lib/api";
 
 
 export type Ticket = {
@@ -53,11 +54,11 @@ export default function EmployeePage() {
   }, []);
 
   // Fetch tickets raised by this user
-  
-    const fetchAssets = async () => {
+
+  const fetchAssets = async () => {
     if (!userId) return;
     try {
-      const res = await fetch(`http://localhost:8000/assets/raised/${userId}`, {
+      const res = await fetch(apiUrl(`/assets/raised/${userId}`), {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to fetch");
@@ -71,7 +72,7 @@ export default function EmployeePage() {
   const fetchTickets = async () => {
     if (!userId) return;
     try {
-      const res = await fetch(`http://localhost:8000/tickets/raised/${userId}`, {
+      const res = await fetch(apiUrl(`/tickets/raised/${userId}`), {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to fetch");
@@ -85,7 +86,7 @@ export default function EmployeePage() {
 
 
 
- 
+
 
   if (error) {
     return (
@@ -100,12 +101,11 @@ export default function EmployeePage() {
     );
   }
 
-   useEffect(() => {
-    if (userId) 
-      {
-        fetchTickets();
-        fetchAssets();
-      }
+  useEffect(() => {
+    if (userId) {
+      fetchTickets();
+      fetchAssets();
+    }
   }, [userId]);
 
   return (
@@ -113,7 +113,7 @@ export default function EmployeePage() {
       <Sidebar active={active} setActive={setActive} />
 
       <div className="flex-1 p-8 bg-white min-h-screen">
-         {active === "home" && <HomeView />} 
+        {active === "home" && <HomeView />}
 
         {active === "ticket" && userId && (
           <TicketForm userId={userId} refreshTickets={fetchTickets} />
@@ -124,9 +124,9 @@ export default function EmployeePage() {
         )}
 
         {active === "log" && <LogView tickets={tickets} userId={userId} />}
-{active === "log" && <LogView tickets={assets} userId={userId} />}
+        {active === "log" && <LogView tickets={assets} userId={userId} />}
 
-       
+
       </div>
     </div>
   );

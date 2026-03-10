@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { apiUrl } from "@/lib/api";
 
 export default function DiscussionModal({
   kind,
@@ -18,7 +19,7 @@ export default function DiscussionModal({
 
   const loadMessages = async () => {
     try {
-      const res = await fetch(`http://localhost:8000/discussion/${kind}/${refId}`);
+      const res = await fetch(apiUrl(`/discussion/${kind}/${refId}`));
       const data = await res.json();
       setMessages(data.messages || []);
     } catch (e) {
@@ -34,7 +35,7 @@ export default function DiscussionModal({
     if (!newMessage.trim()) return;
 
     const res = await fetch(
-      `http://localhost:8000/discussion/${kind}/${refId}/message`,
+      apiUrl(`/discussion/${kind}/${refId}/message`),
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },

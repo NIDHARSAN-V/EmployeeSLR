@@ -70,22 +70,22 @@ export const notificationForTimeEnded = async (req: Request, res: Response) => {
 
 export const slaBreachedTickets = async (req: Request, res: Response) => {
   const items = await slaBreached("ticket");
-  return res.json({ type: "ticket", mode: "BREACHED", items });
+  return res.json(items);
 };
 
 export const slaBreachedAssets = async (req: Request, res: Response) => {
   const items = await slaBreached("asset");
-  return res.json({ type: "asset", mode: "BREACHED", items });
+  return res.json(items);
 };
 
 export const slaNearTickets = async (req: Request, res: Response) => {
   const items = await slaNear("ticket");
-  return res.json({ type: "ticket", mode: "NEAR", items });
+  return res.json(items);
 };
 
 export const slaNearAssets = async (req: Request, res: Response) => {
   const items = await slaNear("asset");
-  return res.json({ type: "asset", mode: "NEAR", items });
+  return res.json(items);
 };
 
 

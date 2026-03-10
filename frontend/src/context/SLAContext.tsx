@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { apiUrl } from "@/lib/api";
 
 interface Ticket {
   refId: string;
@@ -24,9 +25,7 @@ export function SLAProvider({ children }: { children: React.ReactNode }) {
     const fetchSLAData = async () => {
       try {
 
-        const response = await fetch(
-          "http://localhost:8000/notifications/sla-breached/tickets"
-        );
+        const response = await fetch(apiUrl("/notifications/sla-breached/tickets"));
 
         const data = await response.json();
 

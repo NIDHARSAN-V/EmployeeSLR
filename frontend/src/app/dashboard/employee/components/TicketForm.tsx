@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { apiUrl } from "@/lib/api";
 
 export type Ticket = {
   _id: string;
@@ -34,12 +35,12 @@ export default function TicketForm({
       setErrorMsg("User not authenticated. Please login again.");
       return;
     }
-    
+
 
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:8000/tickets", {
+      const res = await fetch(apiUrl("/tickets"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -69,7 +70,7 @@ export default function TicketForm({
   const fetchTickets = async () => {
     if (!userId) return;
     try {
-      const res = await fetch(`http://localhost:8000/tickets/raised/${userId}`, {
+      const res = await fetch(apiUrl(`/tickets/raised/${userId}`), {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to fetch");
