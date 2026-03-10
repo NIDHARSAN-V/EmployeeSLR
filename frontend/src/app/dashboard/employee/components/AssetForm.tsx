@@ -27,12 +27,11 @@ export default function AssetForm({
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:5000/tickets", {
+      const res = await fetch("http://localhost:8000/assets", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          type: "asset",
           request_type: requestType,
           raised_by: userId,
         }),
