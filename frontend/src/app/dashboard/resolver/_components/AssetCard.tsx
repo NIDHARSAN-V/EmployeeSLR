@@ -6,14 +6,13 @@ import { GetUserById } from "@/api/user";
 import { useAuth } from "@/context/AuthContext";
 import DiscussionModal from "@/app/dashboard/resolver/_components/DiscussionModal";
 
-interface AssetCardProps {
-  id: string;
+export interface AssetCardProps {
   asset: Asset;
   onAccept?: (id: string) => void;
   onComplete?: (id: string) => void;
-  // NEW:
-  expanded?: boolean;          // controlled expansion from parent
-  onToggle?: () => void;       // notify parent to toggle
+  // controlled expansion from parent (optional)
+  expanded?: boolean;
+  onToggle?: () => void;
 }
 
 const statusConfig: Record<string, { label: string; color: string }> = {
@@ -32,15 +31,22 @@ export default function AssetCard({
   asset,
   onAccept,
   onComplete,
-  expanded,        // controlled (optional)
-  onToggle,        // controlled (optional)
+  expanded,   // controlled (optional)
+  onToggle,   // controlled (optional)
 }: AssetCardProps) {
-  // keep local state as fallback when parent is not controlling
+  // auth user (needed for DiscussionModal)
+  const { user } = useAuth();
+
+  // local expansion fallback when parent does not control
   const [localExpanded, setLocalExpanded] = useState(false);
   const isExpanded = expanded ?? localExpanded;
 
+  // names
   const [raisedByName, setRaisedByName] = useState<string>("");
   const [acceptedByName, setAcceptedByName] = useState<string>("");
+
+  // NEW: discussion modal open state
+  const [isDiscussionOpen, setIsDiscussionOpen] = useState(false);
 
   const sc = statusConfig[asset.status] ?? statusConfig["pending"];
   const accent = statusAccent[asset.status] ?? "border-l-slate-700";
@@ -85,8 +91,8 @@ export default function AssetCard({
   }, [asset.raised_by, asset.accepted_by]);
 
   const handleToggle = () => {
-    if (onToggle) return onToggle();           // delegate to parent if controlled
-    setLocalExpanded((v) => !v);               // otherwise manage locally
+    if (onToggle) return onToggle();     // delegate to parent if controlled
+    setLocalExpanded((v) => !v);         // otherwise manage locally
   };
 
   return (
@@ -213,7 +219,7 @@ export default function AssetCard({
       {isDiscussionOpen && user?.id && (
         <DiscussionModal
           kind="asset"
-          refId={id}
+          refId={asset.refId}
           userId={user.id}
           title={asset.request_type}
           onClose={() => setIsDiscussionOpen(false)}
