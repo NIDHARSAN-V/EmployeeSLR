@@ -7,7 +7,6 @@ import { useAuth } from "@/context/AuthContext";
 import DiscussionModal from "@/app/dashboard/resolver/_components/DiscussionModal";
 
 interface AssetCardProps {
-  id: string;
   asset: Asset;
   onAccept?: (id: string) => void;
   onComplete?: (id: string) => void;
@@ -35,6 +34,8 @@ export default function AssetCard({
   expanded,        // controlled (optional)
   onToggle,        // controlled (optional)
 }: AssetCardProps) {
+  const { user } = useAuth();
+  const [isDiscussionOpen, setIsDiscussionOpen] = useState(false);
   // keep local state as fallback when parent is not controlling
   const [localExpanded, setLocalExpanded] = useState(false);
   const isExpanded = expanded ?? localExpanded;
@@ -213,7 +214,7 @@ export default function AssetCard({
       {isDiscussionOpen && user?.id && (
         <DiscussionModal
           kind="asset"
-          refId={id}
+          refId={asset.refId}
           userId={user.id}
           title={asset.request_type}
           onClose={() => setIsDiscussionOpen(false)}
