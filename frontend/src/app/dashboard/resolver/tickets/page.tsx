@@ -18,7 +18,6 @@ export default function TicketsPage() {
     const fetchTickets = async () => {
       try {
         const allTickets = await GetAllTickets();
-        // Completed tickets live in /history — exclude them here
         setTickets(allTickets.filter((t) => t.status !== "completed"));
       } catch {
         setTickets([]);
@@ -34,25 +33,19 @@ export default function TicketsPage() {
     try {
       const updated = await AcceptTicket(id, user.id);
       setTickets((prev) => prev.map((t) => (t.refId === id ? { ...t, ...updated } : t)));
-    } catch (e) {
-      console.error("Failed to accept ticket", e);
-    }
+    } catch (e) { console.error(e); }
   };
 
   const handleComplete = async (id: string) => {
     if (!user?.id) return;
     try {
       await CompleteTicket(id, user.id);
-      // Remove from active queue — it now lives in history
       setTickets((prev) => prev.filter((t) => t.refId !== id));
-    } catch (e) {
-      console.error("Failed to complete ticket", e);
-    }
+    } catch (e) { console.error(e); }
   };
 
   const filtered = tickets.filter((t) => {
-    const matchesSearch =
-      !search ||
+    const matchesSearch = !search ||
       t.request_type.toLowerCase().includes(search.toLowerCase()) ||
       t.refId.toLowerCase().includes(search.toLowerCase()) ||
       t.kind.toLowerCase().includes(search.toLowerCase()) ||
@@ -62,44 +55,35 @@ export default function TicketsPage() {
   });
 
   const counts = {
-    pending: tickets.filter((t) => t.status === "pending").length,
+    pending:  tickets.filter((t) => t.status === "pending").length,
     accepted: tickets.filter((t) => t.status === "accepted").length,
   };
 
   if (loading)
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <p className="text-slate-500 font-mono text-sm animate-pulse">Loading tickets...</p>
+      <div className="min-h-screen bg-[#0d1117] flex items-center justify-center">
+        <p className="text-slate-700 text-xs uppercase tracking-widest animate-pulse">Loading...</p>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-6 lg:p-8 font-sans">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs font-mono text-slate-500 uppercase tracking-widest">Resolver Console</span>
-          <span className="text-slate-700">/</span>
-          <span className="text-xs font-mono text-amber-400 uppercase tracking-widest">Tickets</span>
-        </div>
-        <div className="flex items-center justify-between">
+    <div className="min-h-screen text-slate-100 p-6 lg:p-10">
+      <div className="mb-10">
+        <p className="text-[10px] uppercase tracking-[0.2em] mb-3">
+          Resolver Console / Tickets
+        </p>
+        <div className="flex items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl lg:text-3xl font-bold text-slate-100 tracking-tight">Ticket Queue</h1>
-            <p className="text-sm text-slate-500 mt-1 font-mono">
-              <span className="text-amber-400">{counts.pending}</span> pending ·{" "}
-              <span className="text-sky-400">{counts.accepted}</span> accepted
+            <h1 className="text-2xl font-semibold text-slate-100 tracking-tight">Ticket Queue</h1>
+            <p className="text-sm text-slate-600 mt-1">
+              <span className="text-amber-400/80">{counts.pending}</span> pending &nbsp;
+              <span className="text-slate-700">·</span>&nbsp;
+              <span className="text-sky-400/80">{counts.accepted}</span> in progress
             </p>
-          </div>
-          <a
-            href="/dashboard/resolver/history"
-            className="text-xs font-mono px-3 py-1.5 rounded border border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-500 transition-colors uppercase tracking-wider"
-          >
-            History →
-          </a>
+          </div> 
         </div>
       </div>
 
-      {/* Filters — only pending + accepted tabs (no completed) */}
       <TicketFilters
         search={search}
         onSearchChange={setSearch}
@@ -111,13 +95,11 @@ export default function TicketsPage() {
       />
 
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="text-4xl mb-4">🎫</div>
-          <p className="text-slate-400 font-medium">No tickets match your filters</p>
-          <p className="text-xs text-slate-600 font-mono mt-1">Try adjusting your search or filter criteria</p>
+        <div className="flex flex-col items-center justify-center py-32 text-center">
+          <p className="text-slate-600 text-sm">No tickets match your filters</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">
           {filtered.map((ticket) => (
             <TicketCard
               key={ticket.refId}
