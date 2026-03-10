@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import EmployeePage from "./components/EmployeePage";
 
 export default function EmployeeDashboard() {
   const { user, loading } = useAuth();
@@ -21,5 +22,9 @@ export default function EmployeeDashboard() {
     return <div>Loading...</div>;
   }
 
-  return <h1>Employee Dashboard</h1>;
+  return (
+    <>
+    <EmployeePage />
+    </>
+  );
 } 

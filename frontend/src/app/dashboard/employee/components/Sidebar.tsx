@@ -4,7 +4,7 @@ export default function Sidebar({ active, setActive }: any) {
     { label: "Raise Ticket", value: "ticket" },
     { label: "Request Asset", value: "asset" },
     { label: "My Logs", value: "log" },
-    { label: "Notifications", value: "notifications" },
+    
   ];
 
   return (
