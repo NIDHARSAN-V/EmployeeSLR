@@ -1,8 +1,5 @@
+import AllUsers from "../_essentials/AllUsers";
+
 export default function UsersPage() {
-    return (
-        <div>
-            <h1>Users</h1>
-            <p>This is the Users page.</p>
-        </div>
-    );
+    return <AllUsers />;
 }

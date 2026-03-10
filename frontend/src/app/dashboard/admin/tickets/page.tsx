@@ -69,7 +69,7 @@ export default function TicketsPage() {
   return (
     <div className="min-h-screen text-slate-100 p-6 lg:p-10">
       <div className="mb-10">
-        <p className="text-[10px] uppercase tracking-[0.2em] mb-3">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-slate-600 mb-3">
           ADMIN Console / Tickets
         </p>
         <div className="flex items-end justify-between gap-4">
@@ -77,7 +77,7 @@ export default function TicketsPage() {
             <h1 className="text-2xl font-semibold text-slate-100 tracking-tight">Ticket Queue</h1>
             <p className="text-sm text-slate-600 mt-1">
               <span className="text-amber-400/80">{counts.pending}</span> pending &nbsp;
-              <span className="text-slate-700">·</span>&nbsp;
+              <span className="text-slate-700">·</span> &nbsp;
               <span className="text-sky-400/80">{counts.accepted}</span> in progress
             </p>
           </div> 
