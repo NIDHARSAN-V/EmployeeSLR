@@ -72,7 +72,7 @@ export default function AssetsPage() {
       {/* Header */}
       <div className="mb-10">
         <p className="text-[10px] uppercase tracking-[0.2em] text-slate-600 mb-3">
-          Resolver Console / Assets
+          ADMIN Console / Assets
         </p>
         <div className="flex items-end justify-between gap-4">
           <div>
@@ -85,6 +85,8 @@ export default function AssetsPage() {
           </div>
         </div>
       </div>
+
+      
 
       <AssetFilters
         search={search}

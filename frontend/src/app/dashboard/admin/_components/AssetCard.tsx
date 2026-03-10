@@ -109,23 +109,8 @@ export default function AssetCard({
           >
             {expanded ? "Hide" : "Details"}
           </button>
+
           <div className="flex-1" />
-          {asset.status === "pending" && (
-            <button
-              onClick={() => onAccept?.(asset.refId)}
-              className="text-[11px] uppercase tracking-widest text-sky-400 hover:text-sky-300 transition-colors"
-            >
-              Accept →
-            </button>
-          )}
-          {asset.status === "accepted" && (
-            <button
-              onClick={() => onComplete?.(asset.refId)}
-              className="text-[11px] uppercase tracking-widest text-emerald-400 hover:text-emerald-300 transition-colors"
-            >
-              Complete →
-            </button>
-          )}
         </div>
 
         {/* Expanded details */}
