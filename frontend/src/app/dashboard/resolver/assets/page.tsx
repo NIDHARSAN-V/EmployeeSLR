@@ -105,6 +105,7 @@ export default function AssetsPage() {
           {filtered.map((asset) => (
             <AssetCard
               key={asset.refId}
+              id={asset.refId}
               asset={asset}
               onAccept={handleAccept}
               onComplete={handleComplete}
