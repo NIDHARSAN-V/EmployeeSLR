@@ -10,9 +10,9 @@ interface AssetCardProps {
   asset: Asset;
   onAccept?: (id: string) => void;
   onComplete?: (id: string) => void;
-  // NEW:
-  expanded?: boolean;          // controlled expansion from parent
-  onToggle?: () => void;       // notify parent to toggle
+  // controlled expansion from parent (optional)
+  expanded?: boolean;
+  onToggle?: () => void;
 }
 
 const statusConfig: Record<string, { label: string; color: string }> = {
@@ -31,8 +31,8 @@ export default function AssetCard({
   asset,
   onAccept,
   onComplete,
-  expanded,        // controlled (optional)
-  onToggle,        // controlled (optional)
+  expanded,   // controlled (optional)
+  onToggle,   // controlled (optional)
 }: AssetCardProps) {
   const { user } = useAuth();
   const [isDiscussionOpen, setIsDiscussionOpen] = useState(false);
@@ -40,8 +40,12 @@ export default function AssetCard({
   const [localExpanded, setLocalExpanded] = useState(false);
   const isExpanded = expanded ?? localExpanded;
 
+  // names
   const [raisedByName, setRaisedByName] = useState<string>("");
   const [acceptedByName, setAcceptedByName] = useState<string>("");
+
+  // NEW: discussion modal open state
+  const [isDiscussionOpen, setIsDiscussionOpen] = useState(false);
 
   const sc = statusConfig[asset.status] ?? statusConfig["pending"];
   const accent = statusAccent[asset.status] ?? "border-l-slate-700";
@@ -86,8 +90,8 @@ export default function AssetCard({
   }, [asset.raised_by, asset.accepted_by]);
 
   const handleToggle = () => {
-    if (onToggle) return onToggle();           // delegate to parent if controlled
-    setLocalExpanded((v) => !v);               // otherwise manage locally
+    if (onToggle) return onToggle();     // delegate to parent if controlled
+    setLocalExpanded((v) => !v);         // otherwise manage locally
   };
 
   return (

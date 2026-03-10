@@ -36,19 +36,32 @@ export default function TicketCard({
   const { user } = useAuth();
   const [isDiscussionOpen, setIsDiscussionOpen] = useState(false);
   const [raisedByName, setRaisedByName] = useState<string>("");
+  const [isDiscussionOpen, setIsDiscussionOpen] = useState(false);
+
   const sc = statusConfig[ticket.status] ?? statusConfig["pending"];
   const accent = statusAccent[ticket.status] ?? "border-l-slate-700";
 
   useEffect(() => {
-    const fetchData = async () => {
+    let ignore = false;
+
+    const fetchRaisedBy = async () => {
       try {
-        const user = await GetUserById(ticket.raised_by);
-        setRaisedByName(user.userName);
+        if (ticket.raised_by) {
+          const u = await GetUserById(ticket.raised_by);
+          if (!ignore) setRaisedByName(u?.userName ?? "");
+        } else {
+          if (!ignore) setRaisedByName("");
+        }
       } catch (e) {
-        console.error("Error for ticket card is:", e);
+        console.error("Error fetching raised_by user:", e);
+        if (!ignore) setRaisedByName((prev) => prev || "");
       }
     };
-    fetchData();
+
+    fetchRaisedBy();
+    return () => {
+      ignore = true;
+    };
   }, [ticket.raised_by]);
 
   const formattedDate = new Date(ticket.createdAt).toLocaleDateString("en-US", {
@@ -57,31 +70,21 @@ export default function TicketCard({
     day: "numeric",
   });
 
-  useEffect(() => {
-    const fetchUserNames = async () => {
-      try {
-        if (ticket.raised_by) {
-          const user = await GetUserById(ticket.raised_by);
-          setRaisedByName(user.userName);
-        }
-      } catch (error) {
-        console.error("Error fetching user names:", error);
-      }
-    };
-
-    fetchUserNames();
-  }, [ticket.raised_by, ticket.accepted_by]);
-
   return (
     <div
       className={`bg-[#0d1117] border border-slate-800 border-l-2 ${accent} hover:border-slate-700 transition-all duration-200`}
     >
       <div className="p-4">
+        {/* Header */}
         <div className="flex items-start justify-between gap-2 mb-3">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
               <span className="text-[10px] tracking-widest uppercase">
                 {ticket.kind}
+              </span>
+              <span className="text-[10px] text-slate-700">·</span>
+              <span className="text-[10px] text-slate-600 tracking-wider">
+                #{ticket.refId}
               </span>
             </div>
             <h3 className="text-sm font-medium leading-snug">
@@ -95,6 +98,7 @@ export default function TicketCard({
           </span>
         </div>
 
+        {/* Sub-header */}
         <div className="flex items-center gap-4 text-[11px] mb-4">
           <span>{formattedDate}</span>
           {ticket.completeDueAt && (
@@ -108,10 +112,12 @@ export default function TicketCard({
           )}
         </div>
 
+        {/* Controls */}
         <div className="flex items-center gap-3 pt-3 border-t border-slate-800/80">
           <button
             onClick={onToggle}
             className="text-[10px] uppercase tracking-widest hover:text-slate-400 transition-colors"
+            type="button"
           >
             {expanded ? "Hide" : "Details"}
           </button>
@@ -125,28 +131,33 @@ export default function TicketCard({
           </button>
 
           <div className="flex-1" />
+
           {ticket.status === "pending" && (
             <button
               onClick={() => onAccept?.(ticket.refId)}
               className="text-[15px] uppercase tracking-widest text-sky-400 hover:text-sky-300 transition-colors"
+              type="button"
             >
               Mark Accept →
             </button>
           )}
+
           {ticket.status === "accepted" && (
             <button
               onClick={() => onComplete?.(ticket.refId)}
               className="text-[15px] uppercase tracking-widest text-emerald-400 hover:text-black transition-colors hover:font-bold hover:border-emerald-400/60 hover:border-2 hover:bg-emerald-400"
+              type="button"
             >
               Mark Complete →
             </button>
           )}
         </div>
 
+        {/* Expanded details */}
         {expanded && (
           <div className="mt-4 pt-4 border-t border-slate-800/80 grid grid-cols-2 gap-x-6 gap-y-3">
             {[
-              { label: "Raised By", value: raisedByName },
+              { label: "Raised By", value: raisedByName || "—" },
               { label: "Created", value: formattedDate },
               {
                 label: "Accepted At",
@@ -188,6 +199,7 @@ export default function TicketCard({
         )}
       </div>
 
+      {/* Discussion modal */}
       {isDiscussionOpen && user?.id && (
         <DiscussionModal
           kind="ticket"
