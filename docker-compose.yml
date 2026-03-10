@@ -169,7 +169,7 @@ services:
     image: nidharsan8008/frontend_next_image:latest 
     container_name: employeeslr-frontend
     environment:
-      - NEXT_PUBLIC_API_BASE_URL=http://135.235.195.238:8000
+      - NEXT_PUBLIC_API_BASE_URL=http://server:8000
     ports:
       - "80:3000"
     depends_on:
