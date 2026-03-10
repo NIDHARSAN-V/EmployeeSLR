@@ -35,8 +35,7 @@ export default function AssetCard({
   onToggle,   // controlled (optional)
 }: AssetCardProps) {
   const { user } = useAuth();
-  const [isDiscussionOpen, setIsDiscussionOpen] = useState(false);
-  // keep local state as fallback when parent is not controlling
+
   const [localExpanded, setLocalExpanded] = useState(false);
   const isExpanded = expanded ?? localExpanded;
 
