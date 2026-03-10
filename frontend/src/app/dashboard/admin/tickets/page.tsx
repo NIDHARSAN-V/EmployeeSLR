@@ -13,6 +13,7 @@ export default function TicketsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTickets = async () => {
@@ -106,6 +107,12 @@ export default function TicketsPage() {
               ticket={ticket}
               onAccept={handleAccept}
               onComplete={handleComplete}
+              expanded={expandedTicket === ticket.refId}
+              onToggle={() =>
+                setExpandedTicket(
+                  expandedTicket === ticket.refId ? null : ticket.refId,
+                )
+              }
             />
           ))}
         </div>

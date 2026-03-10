@@ -29,6 +29,7 @@ export default function EmployeePage() {
   const [assets, setAssets] = useState<Asset[]>([]);
   const [userId, setUserId] = useState("");
   const [error, setError] = useState("");
+  const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
 
   
   useEffect(() => {
@@ -112,13 +113,19 @@ export default function EmployeePage() {
       </div>
   <br />
   <br />
-  <h3 className="text-xl font-bold mb-4">Your Asset Requests</h3>
+  <h3 className="text-xl font-bold mb-4">Your Ticket Requests</h3>
       <div className="mt-8">
-        {/* <LogView tickets={assets} userId={userId} /> */}
-        {assets.map((asset) => (
-          <TicketCard key={asset.id} ticket={asset} expanded={false} onToggle={function (): void {
-            throw new Error("Function not implemented.");
-          } } />
+        {tickets.map((ticket) => (
+          <TicketCard
+            key={ticket.refId}
+            ticket={ticket}
+            expanded={expandedTicket === ticket.refId}
+            onToggle={() =>
+              setExpandedTicket(
+                expandedTicket === ticket.refId ? null : ticket.refId,
+              )
+            }
+          />
         ))}
       </div>
     </div>
