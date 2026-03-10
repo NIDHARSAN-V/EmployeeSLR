@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { Ticket } from "@/types/ticket";
 import { GetUserById } from "@/api/user";
+import { useAuth } from "@/context/AuthContext";
+import DiscussionModal from "@/app/dashboard/resolver/_components/DiscussionModal";
 
 interface TicketCardProps {
   ticket: Ticket;
@@ -111,6 +113,15 @@ export default function TicketCard({
           >
             {expanded ? "Hide" : "Details"}
           </button>
+
+          <button
+            type="button"
+            onClick={() => setIsDiscussionOpen(true)}
+            className="text-[10px] uppercase tracking-widest text-slate-600 hover:text-slate-400 transition-colors"
+          >
+            Comments
+          </button>
+
           <div className="flex-1" />
           {ticket.status === "pending" && (
             <button
@@ -174,6 +185,16 @@ export default function TicketCard({
           </div>
         )}
       </div>
+
+      {isDiscussionOpen && user?.id && (
+        <DiscussionModal
+          kind="ticket"
+          refId={ticket.refId}
+          userId={user.id}
+          title={ticket.request_type}
+          onClose={() => setIsDiscussionOpen(false)}
+        />
+      )}
     </div>
   );
 }
