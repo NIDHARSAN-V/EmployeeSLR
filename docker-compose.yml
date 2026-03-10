@@ -166,7 +166,7 @@
 services:
 
   frontend:
-    image: nidharsan8008/frontend_next_image:latest 
+    image: nidharsan8008/frontend_next_image_test:latest 
     container_name: employeeslr-frontend
     environment:
       - NEXT_PUBLIC_API_BASE_URL=http://server:8000
@@ -178,7 +178,7 @@ services:
       - app-network
 
   server:
-    image: nidharsan8008/server_node_image:latest
+    image: nidharsan8008/server_node_image_test:latest
     container_name: employeeslr-server
     environment:
       - MONGO_URI=mongodb://mongodb:27017/employeeslr

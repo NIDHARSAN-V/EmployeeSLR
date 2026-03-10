@@ -25,17 +25,11 @@ const statusAccent: Record<string, string> = {
   completed: "border-l-emerald-400/40",
 };
 
-export default function AssetCard({
-  id,
-  asset,
-  onAccept,
-  onComplete,
-}: AssetCardProps) {
-  const { user } = useAuth();
+export default function AssetCard({ asset, onAccept, onComplete }: AssetCardProps) {
   const [expanded, setExpanded] = useState(false);
-  const [isDiscussionOpen, setIsDiscussionOpen] = useState(false);
-  const [raisedByName, setRaisedByName] = useState<string>(asset.raised_by);
-  const [acceptedByName, setAcceptedByName] = useState<string | null>(null);
+  // Start as empty strings; fill after we fetch the user names
+  const [raisedByName, setRaisedByName] = useState<string>("");
+  const [acceptedByName, setAcceptedByName] = useState<string>("");
 
   const sc = statusConfig[asset.status] ?? statusConfig["pending"];
   const accent = statusAccent[asset.status] ?? "border-l-slate-700";
@@ -47,30 +41,42 @@ export default function AssetCard({
   });
 
   useEffect(() => {
+    let ignore = false;
+
     const fetchUserNames = async () => {
       try {
         if (asset.raised_by) {
           const user = await GetUserById(asset.raised_by);
-          setRaisedByName(user.userName);
+          if (!ignore) setRaisedByName(user?.userName ?? "");
+        } else {
+          if (!ignore) setRaisedByName("");
         }
+
         if (asset.accepted_by) {
           const user = await GetUserById(asset.accepted_by);
-          setAcceptedByName(user.userName);
+          if (!ignore) setAcceptedByName(user?.userName ?? "");
+        } else {
+          if (!ignore) setAcceptedByName("");
         }
       } catch (error) {
         console.error("Error fetching user names:", error);
+        if (!ignore) {
+          setRaisedByName((prev) => prev || "");
+          setAcceptedByName((prev) => prev || "");
+        }
       }
     };
 
     fetchUserNames();
+    return () => {
+      ignore = true;
+    };
   }, [asset.raised_by, asset.accepted_by]);
 
   return (
-    <div
-      className={`bg-[#0d1117] border border-slate-800 border-l-2 ${accent} hover:border-slate-700 transition-all duration-200`}
-    >
+    <div className={`bg-[#0d1117] border border-slate-800 border-l-2 ${accent} hover:border-slate-700 transition-all duration-200`}>
       <div className="p-4">
-        {/* Welcome Row */}
+        {/* Header */}
         <div className="flex items-start justify-between gap-2 mb-3">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
@@ -86,14 +92,12 @@ export default function AssetCard({
               {asset.request_type}
             </h3>
           </div>
-          <span
-            className={`text-[10px] uppercase tracking-widest shrink-0 ${sc.color}`}
-          >
+          <span className={`text-[10px] uppercase tracking-widest shrink-0 ${sc.color}`}>
             {sc.label}
           </span>
         </div>
 
-        {/* Sub welcome Row */}
+        {/* Sub-header */}
         <div className="flex items-center gap-4 text-[11px] text-slate-600 mb-4">
           <span>{formattedDate}</span>
           {asset.completeDueAt && (
@@ -107,10 +111,10 @@ export default function AssetCard({
           )}
         </div>
 
-        {/* Hide / Unhide*/}
+        {/* Controls */}
         <div className="flex items-center gap-3 pt-3 border-t border-slate-800/80">
           <button
-            onClick={() => setExpanded(!expanded)}
+            onClick={() => setExpanded((v) => !v)}
             className="text-[10px] uppercase tracking-widest text-slate-600 hover:text-slate-400 transition-colors"
           >
             {expanded ? "Hide" : "Details"}
@@ -147,8 +151,8 @@ export default function AssetCard({
         {expanded && (
           <div className="mt-4 pt-4 border-t border-slate-800/80 grid grid-cols-2 gap-x-6 gap-y-3">
             {[
-              { label: "Raised By", value: raisedByName },
-              { label: "Accepted By", value: acceptedByName ?? "—" },
+              { label: "Raised By", value: raisedByName || "—" },
+              { label: "Accepted By", value: acceptedByName || "—" },
               { label: "Created", value: formattedDate },
               {
                 label: "Accepted At",
