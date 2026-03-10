@@ -26,3 +26,5 @@ Time --
 
 docker run -d  --name mongodb  -p 27017:27017 mongo:latest
 docker run -d -p 8000:8000  --link mongodb  -e MONGODB_URI="mongodb://mongodb:27017/employeeslr"  --name server-app  server_node:latest
+
+docker rm -f $(docker ps -a -q)
