@@ -6,7 +6,7 @@ import { GetUserById } from "@/api/user";
 import { useAuth } from "@/context/AuthContext";
 import DiscussionModal from "@/app/dashboard/resolver/_components/DiscussionModal";
 
-export interface AssetCardProps {
+interface AssetCardProps {
   asset: Asset;
   onAccept?: (id: string) => void;
   onComplete?: (id: string) => void;
@@ -34,10 +34,9 @@ export default function AssetCard({
   expanded,   // controlled (optional)
   onToggle,   // controlled (optional)
 }: AssetCardProps) {
-  // auth user (needed for DiscussionModal)
   const { user } = useAuth();
-
-  // local expansion fallback when parent does not control
+  const [isDiscussionOpen, setIsDiscussionOpen] = useState(false);
+  // keep local state as fallback when parent is not controlling
   const [localExpanded, setLocalExpanded] = useState(false);
   const isExpanded = expanded ?? localExpanded;
 
