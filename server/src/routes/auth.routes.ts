@@ -3,12 +3,12 @@ import {
   registerUser,
   loginUser,
   logoutUser,
-  getUserById
+  getUserById,
+  getAllUsers,
 } from "../controllers/auth.controller";
 import { authMiddleware } from "../middlewares/auth.middleware";
 import { authorizeRoles } from "../middlewares/role.middleware";
 import { Role } from "../types/user.types";
-
 const router = Router();
 
 router.post("/register", registerUser);
@@ -20,17 +20,14 @@ router.get("/profile", authMiddleware, (req, res) => {
   res.json({ user: (req as any).user });
 });
 
+// get all users
+router.get("/all", getAllUsers);
+
 // role-based route
-router.get(
-  "/admin",
-  authMiddleware,
-  authorizeRoles(Role.ADMIN),
-  (req, res) => {
-    res.json({ message: "Admin Access Granted" });
-  }
-);
-
+router.get("/admin", authMiddleware, authorizeRoles(Role.ADMIN), (req, res) => {
+  res.json({ message: "Admin Access Granted" });
+});
+// get user by id
 router.get("/:id", authMiddleware, getUserById);
-
 
 export default router;

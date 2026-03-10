@@ -7,7 +7,7 @@ import {
   getTicketById,
   getTicketsRaisedByUser,
   getTicketsSolvedByUser,
-  getTicketsByStatus,
+  getTicketsByStatus,getTicketsAcceptedByUser,
 } from "../controllers/ticket.controller";
 
 const router = Router();
@@ -15,6 +15,7 @@ const router = Router();
 router.post("/", createTicket);
 router.get("/", listTickets);
 router.get("/raised/:userId", getTicketsRaisedByUser);
+router.get("/accepted/:userId", getTicketsAcceptedByUser);
 router.get("/solved/:userId", getTicketsSolvedByUser);
 router.get("/status/:status", getTicketsByStatus);
 router.get("/:id", getTicketById);

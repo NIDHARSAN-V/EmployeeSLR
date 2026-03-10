@@ -1,13 +1,10 @@
 import mongoose, { Schema, Document } from "mongoose";
 
-export type WorkKind = "ticket" | "asset";
-export type EventType = "CREATED" | "ACCEPTED" | "COMPLETED";
-export type ActorRole = "raised_by" | "accepted_by" | "completed_by";
+import { ITicket, IAsset, IWorkEvent, IWorkEventActor, IDiscussion, ISlaAcceptBreach, ISlaCompleteBreach } from "../types/model.types";
 
-// -------------------- Ticket --------------------
-export interface ITicket extends Document {
-  request_type: string;
-}
+export type WorkKind = "ticket" | "asset";
+
+//  Ticket 
 const ticketSchema = new Schema<ITicket>(
   {
     request_type: { type: String, required: true, trim: true },
@@ -16,10 +13,8 @@ const ticketSchema = new Schema<ITicket>(
 );
 export const Ticket = mongoose.model<ITicket>("Ticket", ticketSchema);
 
-// -------------------- Asset --------------------
-export interface IAsset extends Document {
-  request_type: string;
-}
+
+// Asset 
 const assetSchema = new Schema<IAsset>(
   {
     request_type: { type: String, required: true, trim: true },
@@ -28,14 +23,9 @@ const assetSchema = new Schema<IAsset>(
 );
 export const Asset = mongoose.model<IAsset>("Asset", assetSchema);
 
-// -------------------- WorkEvent (deadline = dueAt) --------------------
-export interface IWorkEvent extends Document {
-  kind: WorkKind;
-  refId: mongoose.Types.ObjectId;
-  eventType: EventType;
-  occurredAt: Date;
-  dueAt?: Date | null; // ✅ estimated deadline for that stage
-}
+
+
+// WorkEvent 
 const workEventSchema = new Schema<IWorkEvent>(
   {
     kind: { type: String, enum: ["ticket", "asset"], required: true },
@@ -51,17 +41,13 @@ const workEventSchema = new Schema<IWorkEvent>(
 
 // one event per stage
 workEventSchema.index({ kind: 1, refId: 1, eventType: 1 }, { unique: true });
-// fast deadline queries
 workEventSchema.index({ eventType: 1, dueAt: 1 });
 
 export const WorkEvent = mongoose.model<IWorkEvent>("WorkEvent", workEventSchema);
 
-// -------------------- WorkEventActor --------------------
-export interface IWorkEventActor extends Document {
-  eventId: mongoose.Types.ObjectId;
-  userId: mongoose.Types.ObjectId;
-  role: ActorRole;
-}
+
+
+// WorkEventActor 
 const workEventActorSchema = new Schema<IWorkEventActor>(
   {
     eventId: { type: Schema.Types.ObjectId, ref: "WorkEvent", required: true },
@@ -76,19 +62,9 @@ workEventActorSchema.index({ userId: 1 });
 
 export const WorkEventActor = mongoose.model<IWorkEventActor>("WorkEventActor", workEventActorSchema);
 
-// ===================== Discussion / Comments =====================
-export interface IDiscussionMessage {
-  userId: mongoose.Types.ObjectId;
-  message: string;
-  createdAt: Date;
-}
 
-export interface IDiscussion extends Document {
-  kind: WorkKind;
-  refId: mongoose.Types.ObjectId;
-  messages: IDiscussionMessage[];
-}
 
+//  Discussion / Comments 
 const discussionSchema = new Schema<IDiscussion>(
   {
     kind: { type: String, enum: ["ticket", "asset"], required: true },
@@ -108,14 +84,9 @@ discussionSchema.index({ kind: 1, refId: 1 }, { unique: true });
 
 export const Discussion = mongoose.model<IDiscussion>("Discussion", discussionSchema);
 
-// ===================== SLA Breach Collections =====================
+//Testing phase SLA Breach Collections 
 // Accept breach
-export interface ISlaAcceptBreach extends Document {
-  kind: WorkKind;
-  refId: mongoose.Types.ObjectId;
-  dueAt: Date;
-  breachedAt: Date;
-}
+
 
 const slaAcceptBreachSchema = new Schema<ISlaAcceptBreach>(
   {
@@ -129,18 +100,13 @@ const slaAcceptBreachSchema = new Schema<ISlaAcceptBreach>(
 
 slaAcceptBreachSchema.index({ kind: 1, refId: 1 }, { unique: true });
 
+
+
+
 export const SlaAcceptBreach = mongoose.model<ISlaAcceptBreach>(
   "SlaAcceptBreach",
   slaAcceptBreachSchema
 );
-
-// Complete breach
-export interface ISlaCompleteBreach extends Document {
-  kind: WorkKind;
-  refId: mongoose.Types.ObjectId;
-  dueAt: Date;
-  breachedAt: Date;
-}
 
 const slaCompleteBreachSchema = new Schema<ISlaCompleteBreach>(
   {

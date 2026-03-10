@@ -9,6 +9,9 @@ import notificationRoutes from "./routes/notification.routes";
 import discussionRoutes from "./routes/discussion.routes";
 
 
+import adminRoutes from "./routes/adminaction.route";
+
+
 const app = express();
 
 // ✅ CORS CONFIG (IMPORTANT)
@@ -22,8 +25,9 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-
+// app.get("/" , console.log("Hello"))
 app.use("/auth", authRoutes);
+app.use("/admin", adminRoutes);
 app.use("/tickets", ticketRoutes);
 app.use("/assets", assetRoutes);
 app.use("/notifications", notificationRoutes);

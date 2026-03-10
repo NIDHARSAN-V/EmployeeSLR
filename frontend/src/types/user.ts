@@ -5,3 +5,10 @@ export interface User {
   email: string;
   role: Role;
 }
+
+export interface UserModel {
+  id: string;
+  userName: string;
+  role: Role;
+  email: string;
+}

@@ -45,6 +45,8 @@ export const createAsset = async (req: Request, res: Response) => {
   return res.status(201).json(await buildView("asset", asset._id));
 };
 
+
+
 export const acceptAsset = async (req: Request, res: Response) => {
   const assetId = req.params.id;
   const { accepted_by } = req.body;
@@ -73,10 +75,14 @@ export const acceptAsset = async (req: Request, res: Response) => {
     dueAt,
   });
 
+
   await WorkEventActor.create({ eventId: ev._id, userId: accepted_by, role: "accepted_by" });
 
   return res.json(await buildView("asset", new mongoose.Types.ObjectId(assetId)));
 };
+
+
+
 
 export const completeAsset = async (req: Request, res: Response) => {
   const assetId = req.params.id;
@@ -111,6 +117,8 @@ export const completeAsset = async (req: Request, res: Response) => {
   return res.json(await buildView("asset", new mongoose.Types.ObjectId(assetId)));
 };
 
+
+//get asset
 export const listAssets = async (_: Request, res: Response) => {
   try {
     const assets = await Asset.find().sort({ _id: -1 }).lean();
@@ -146,6 +154,26 @@ export const getAssetsRaisedByUser = async (req: Request, res: Response) => {
 
   return res.json(out);
 };
+
+
+export const getAssetsAcceptedByUser = async (req: Request, res: Response) => {
+  const userId = req.params.userId;
+  if (!isValidObjectId(userId)) return res.status(400).json({ message: "Invalid userId" });
+
+  const accepted = await WorkEvent.find({ kind: "asset", eventType: "ACCEPTED" }).lean();
+  const out: any[] = [];
+
+  for (const ev of accepted) {
+    const actor = await WorkEventActor.findOne({ eventId: ev._id, role: "accepted_by", userId }).lean();
+    if (!actor) continue;
+    out.push(await buildView("asset", ev.refId));
+  }
+
+  return res.json(out);
+};
+
+
+
 
 export const getAssetsSolvedByUser = async (req: Request, res: Response) => {
   const userId = req.params.userId;
