@@ -3,6 +3,9 @@
 import { useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import Dashboard from "./_components/Dashboard";
+
+;
 
 export default function AdminDashboard() {
   const { user, loading } = useAuth();
@@ -20,5 +23,5 @@ export default function AdminDashboard() {
     return <div>Loading...</div>;
   }
 
-  return <h1>Admin Dashboard</h1>;
+  return <Dashboard />;
 } 

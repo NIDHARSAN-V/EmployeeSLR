@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { apiUrl } from "@/lib/api";
 
 export default function AssetForm({
   userId,
@@ -27,12 +28,11 @@ export default function AssetForm({
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:5000/tickets", {
+      const res = await fetch(apiUrl("/assets"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          type: "asset",
           request_type: requestType,
           raised_by: userId,
         }),

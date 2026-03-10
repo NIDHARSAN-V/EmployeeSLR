@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
+import { apiUrl } from "@/lib/api";
 
 
 interface User {
@@ -33,7 +34,7 @@ export default function AllUsers() {
         setLoading(true);
         setError("");
 
-        const response = await fetch("http://localhost:8000/auth/all");
+        const response = await fetch(apiUrl("/auth/all"));
         if (!response.ok) {
           throw new Error(`Failed: ${response.status}`);
         }

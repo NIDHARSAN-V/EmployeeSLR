@@ -6,11 +6,21 @@ import HomeView from "./HomeView";
 import TicketForm from "./TicketForm";
 import AssetForm from "./AssetForm";
 import LogView from "./LogView";
-import NotificationView from "./NotificationView";
+import { apiUrl } from "@/lib/api";
+
 
 export type Ticket = {
   _id: string;
-  type: "ticket" | "asset";
+  kind: "ticket" | "asset";
+  request_type: string;
+  status: "pending" | "accepted" | "completed";
+  raised_by: string;
+  createdAt: string;
+};
+
+export type Asset = {
+  _id: string;
+  kind: "ticket" | "asset";
   request_type: string;
   status: "pending" | "accepted" | "completed";
   raised_by: string;
@@ -27,8 +37,9 @@ function getCookie(name: string): string {
 }
 
 export default function EmployeePage() {
-  const [active, setActive] = useState("home");
+  const [active, setActive] = useState<string>("home");
   const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [assets, setAssets] = useState<Asset[]>([]);
   const [userId, setUserId] = useState("");
   const [error, setError] = useState("");
 
@@ -43,10 +54,25 @@ export default function EmployeePage() {
   }, []);
 
   // Fetch tickets raised by this user
+
+  const fetchAssets = async () => {
+    if (!userId) return;
+    try {
+      const res = await fetch(apiUrl(`/assets/raised/${userId}`), {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to fetch");
+      const data = await res.json();
+      setAssets(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Error fetching tickets:", err);
+    }
+  };
+
   const fetchTickets = async () => {
     if (!userId) return;
     try {
-      const res = await fetch(`http://localhost:5000/tickets/raised/${userId}`, {
+      const res = await fetch(apiUrl(`/tickets/raised/${userId}`), {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to fetch");
@@ -57,9 +83,10 @@ export default function EmployeePage() {
     }
   };
 
-  useEffect(() => {
-    if (userId) fetchTickets();
-  }, [userId]);
+
+
+
+
 
   if (error) {
     return (
@@ -73,6 +100,13 @@ export default function EmployeePage() {
       </div>
     );
   }
+
+  useEffect(() => {
+    if (userId) {
+      fetchTickets();
+      fetchAssets();
+    }
+  }, [userId]);
 
   return (
     <div className="flex min-h-screen bg-slate-100">
@@ -89,10 +123,12 @@ export default function EmployeePage() {
           <AssetForm userId={userId} refreshTickets={fetchTickets} />
         )}
 
-        {active === "log" && <LogView tickets={tickets} />}
+        {active === "log" && <LogView tickets={tickets} userId={userId} />}
+        {active === "log" && <LogView tickets={assets} userId={userId} />}
 
-        {active === "notifications" && <NotificationView tickets={tickets} />}
+
       </div>
     </div>
   );
 }
+

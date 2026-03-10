@@ -1,6 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { apiUrl } from "@/lib/api";
+
+export type Ticket = {
+  _id: string;
+  kind: "ticket" | "asset";
+  request_type: string;
+  status: "pending" | "accepted" | "completed";
+  raised_by: string;
+  createdAt: string;
+};
+
 
 export default function TicketForm({
   userId,
@@ -13,6 +24,7 @@ export default function TicketForm({
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
+  const [tickets, setTickets] = useState<Ticket[]>([]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,15 +36,15 @@ export default function TicketForm({
       return;
     }
 
+
     try {
       setLoading(true);
 
-      const res = await fetch("http://localhost:5000/tickets", {
+      const res = await fetch(apiUrl("/tickets"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          type: "ticket",
           request_type: requestType,
           raised_by: userId,
         }),
@@ -54,6 +66,21 @@ export default function TicketForm({
       setLoading(false);
     }
   };
+
+  const fetchTickets = async () => {
+    if (!userId) return;
+    try {
+      const res = await fetch(apiUrl(`/tickets/raised/${userId}`), {
+        credentials: "include",
+      });
+      if (!res.ok) throw new Error("Failed to fetch");
+      const data = await res.json();
+      setTickets(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Error fetching tickets:", err);
+    }
+  };
+
 
   return (
     <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200 max-w-md">
@@ -93,6 +120,7 @@ export default function TicketForm({
           {loading ? "Submitting..." : "Submit"}
         </button>
       </form>
+
     </div>
   );
 }
