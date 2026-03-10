@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useMemo } from "react";
+import DashboardCard from "./DashboardCard";
 
 
 interface User {
