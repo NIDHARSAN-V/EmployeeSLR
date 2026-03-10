@@ -19,7 +19,6 @@ export default function AssetsPage() {
     const fetchAssets = async () => {
       try {
         const allAssets = await GetAllAssets();
-        // Completed assets live in /history — exclude them here
         setAssets(allAssets.filter((a) => a.status !== "completed"));
       } catch {
         setAssets([]);
@@ -35,25 +34,19 @@ export default function AssetsPage() {
     try {
       const updated = await AcceptAsset(id, user.id);
       setAssets((prev) => prev.map((a) => (a.refId === id ? { ...a, ...updated } : a)));
-    } catch (e) {
-      console.error("Failed to accept asset", e);
-    }
+    } catch (e) { console.error(e); }
   };
 
   const handleComplete = async (id: string) => {
     if (!user?.id) return;
     try {
       await CompleteAsset(id, user.id);
-      // Remove from active queue — it now lives in history
       setAssets((prev) => prev.filter((a) => a.refId !== id));
-    } catch (e) {
-      console.error("Failed to complete asset", e);
-    }
+    } catch (e) { console.error(e); }
   };
 
   const filtered = assets.filter((a) => {
-    const matchesSearch =
-      !search ||
+    const matchesSearch = !search ||
       a.request_type.toLowerCase().includes(search.toLowerCase()) ||
       a.refId.toLowerCase().includes(search.toLowerCase()) ||
       a.kind.toLowerCase().includes(search.toLowerCase()) ||
@@ -63,47 +56,39 @@ export default function AssetsPage() {
   });
 
   const counts = {
-    pending: assets.filter((a) => a.status === "pending").length,
+    pending:  assets.filter((a) => a.status === "pending").length,
     accepted: assets.filter((a) => a.status === "accepted").length,
   };
 
   if (loading)
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <p className="text-slate-500 font-mono text-sm animate-pulse">Loading assets...</p>
+      <div className="min-h-screen bg-[#0d1117] flex items-center justify-center">
+        <p className="text-slate-700 text-xs uppercase tracking-widest animate-pulse">Loading...</p>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-6 lg:p-8 font-sans">
+    <div className="min-h-screen text-slate-100 p-6 lg:p-10">
+
       {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-xs font-mono text-slate-500 uppercase tracking-widest">Resolver Console</span>
-          <span className="text-slate-700">/</span>
-          <span className="text-xs font-mono text-cyan-400 uppercase tracking-widest">Assets</span>
-        </div>
-        <div className="flex items-center justify-between">
+      <div className="mb-10">
+        <p className="text-[10px] uppercase tracking-[0.2em] text-slate-600 mb-3">
+          Resolver Console / Assets
+        </p>
+        <div className="flex items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl lg:text-3xl font-bold text-slate-100 tracking-tight">Asset Requests</h1>
-            <p className="text-sm text-slate-500 mt-1 font-mono">
-              <span className="text-amber-400">{counts.pending}</span> pending ·{" "}
-              <span className="text-sky-400">{counts.accepted}</span> accepted
+            <h1 className="text-2xl font-semibold text-slate-100 tracking-tight">Asset Requests</h1>
+            <p className="text-sm text-slate-600 mt-1">
+              <span className="text-amber-400/80">{counts.pending}</span> pending &nbsp;
+              <span className="text-slate-700">·</span>&nbsp;
+              <span className="text-sky-400/80">{counts.accepted}</span> in progress
             </p>
           </div>
-          <a
-            href="/dashboard/resolver/history"
-            className="text-xs font-mono px-3 py-1.5 rounded border border-slate-700 text-slate-400 hover:text-slate-200 hover:border-slate-500 transition-colors uppercase tracking-wider"
-          >
-            History →
-          </a>
         </div>
       </div>
 
-      {/* Pipeline — only pending + accepted */}
       <AssetPipeline assets={assets} />
 
-      {/* Filters — only pending + accepted tabs */}
       <AssetFilters
         search={search}
         onSearchChange={setSearch}
@@ -115,13 +100,11 @@ export default function AssetsPage() {
       />
 
       {filtered.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="text-4xl mb-4">📦</div>
-          <p className="text-slate-400 font-medium">No assets match your filters</p>
-          <p className="text-xs text-slate-600 font-mono mt-1">Try adjusting your search or filter criteria</p>
+        <div className="flex flex-col items-center justify-center py-32 text-center">
+          <p className="text-slate-600 text-sm">No assets match your filters</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
           {filtered.map((asset) => (
             <AssetCard
               key={asset.refId}
