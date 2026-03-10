@@ -1,8 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import AllUsers from "../components/AllUsers";
-import SLATracking from "../components/SLATracking";
+import AllUsers from "../_components/AllUsers";
+import SLATracking from "../_components/SLATracking";
 // import Settings from "../components/Settings";
 // import Reports from "../components/Reports";
 type TabKey = "users" | "slatracking" | "reports";
