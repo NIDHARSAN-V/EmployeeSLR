@@ -35,6 +35,7 @@ export default function AssetCard({
   onToggle,   // controlled (optional)
 }: AssetCardProps) {
   const { user } = useAuth();
+  const canComplete = asset.status === "accepted" && asset.accepted_by === user?.id;
 
   const [localExpanded, setLocalExpanded] = useState(false);
   const isExpanded = expanded ?? localExpanded;
@@ -157,7 +158,7 @@ export default function AssetCard({
               Accept →
             </button>
           )}
-          {asset.status === "accepted" && (
+          {canComplete && (
             <button
               onClick={() => onComplete?.(asset.refId)}
               className="text-[11px] uppercase tracking-widest text-emerald-400 hover:text-emerald-300 transition-colors"

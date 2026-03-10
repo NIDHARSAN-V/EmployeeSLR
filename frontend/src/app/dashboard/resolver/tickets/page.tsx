@@ -16,21 +16,31 @@ export default function TicketsPage() {
   const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
 
   useEffect(() => {
+    let ignore = false;
+
     const fetchTickets = async () => {
       try {
         const allTickets = await GetAllTickets();
+        if (ignore) return;
         setTickets(
           allTickets.filter(
-            (t) => t.accepted_by === user?.id && t.status !== "completed",
+            (t) =>
+              t.status !== "completed" &&
+              (t.status === "pending" || t.accepted_by === user?.id),
           ),
         );
       } catch {
-        setTickets([]);
+        if (!ignore) setTickets([]);
       } finally {
-        setLoading(false);
+        if (!ignore) setLoading(false);
       }
     };
+
     fetchTickets();
+
+    return () => {
+      ignore = true;
+    };
   }, [user?.id]);
 
   const handleAccept = async (id: string) => {
@@ -47,6 +57,10 @@ export default function TicketsPage() {
 
   const handleComplete = async (id: string) => {
     if (!user?.id) return;
+
+    const ticket = tickets.find((item) => item.refId === id);
+    if (!ticket || ticket.accepted_by !== user.id) return;
+
     try {
       await CompleteTicket(id, user.id);
       setTickets((prev) => prev.filter((t) => t.refId !== id));

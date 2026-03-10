@@ -25,7 +25,9 @@ export default function AssetsPage() {
         if (ignore) return;
         setAssets(
           allAssets.filter(
-            (a) => a.accepted_by === user?.id && a.status !== "completed"
+            (a) =>
+              a.status !== "completed" &&
+              (a.status === "pending" || a.accepted_by === user?.id)
           )
         );
       } catch {
@@ -55,6 +57,10 @@ export default function AssetsPage() {
 
   const handleComplete = async (id: string) => {
     if (!user?.id) return;
+
+    const asset = assets.find((item) => item.refId === id);
+    if (!asset || asset.accepted_by !== user.id) return;
+
     try {
       await CompleteAsset(id, user.id);
       setAssets((prev) => prev.filter((a) => a.refId !== id));
