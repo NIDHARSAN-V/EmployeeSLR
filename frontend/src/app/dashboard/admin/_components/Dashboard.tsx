@@ -1,34 +1,65 @@
 "use client";
 
-import RequestCount from "../components/request-count";
+import { useEffect, useState } from "react";
+import AllUsers from "./AllUsers";
+import SLATracking from "./SLATracking";
+// import Settings from "../components/Settings";
+// import Reports from "../components/Reports";
+type TabKey = "users" | "slatracking" | "reports";
+
+const NAV_ITEMS: { key: TabKey; label: string }[] = [
+  { key: "users", label: "All Users" },
+  { key: "slatracking", label: "SLATracking" },
+  { key: "reports", label: "Reports" },
+];
 
 export default function Dashboard() {
+  // Default tab is "users"
+  const [active, setActive] = useState<TabKey>("users");
+
+  // If you want to derive from localStorage or some logic:
+  // useEffect(() => { setActive("users"); }, []);
+
+  const renderContent = () => {
+    switch (active) {
+      case "users":
+        return <AllUsers />;
+      case "slatracking":
+        return <SLATracking />;
+    //   case "reports":
+    //     return <Reports />;
+      default:
+        return null;
+    }
+  };
+
   return (
-    <div>
-      <h1 className="text-4xl mb-6">DashBoard</h1>
-
-      <div className="grid grid-cols-2 gap-4 mb-4">
-        <div className="rounded-lg border-0 p-4">
-          <RequestCount name="Critical Requests" ticketCount={3} assetCount={1} />
+    <div className="flex min-h-screen">
+      {/* Sidebar */}
+      <aside className="w-64 border-r bg-white">
+        <div className="p-4 border-b">
+          <h1 className="text-xl font-semibold">Admin Dashboard</h1>
         </div>
 
-        <div className="rounded-lg border-0 p-4">
-          <RequestCount name="Pending Requests" ticketCount={5} assetCount={2} />
-          
-        </div>
+        <nav className="p-2 space-y-1">
+          {NAV_ITEMS.map((item) => (
+            <button
+              key={item.key}
+              onClick={() => setActive(item.key)}
+              className={`w-full text-left px-3 py-2 rounded-md transition ${
+                active === item.key
+                  ? "bg-blue-600 text-white"
+                  : "hover:bg-gray-100 text-gray-800"
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </nav>
+      </aside>
 
-        <div className="rounded-lg border-0 p-4">
-          <RequestCount name="Open Requests" ticketCount={7} assetCount={3} />
-        </div>
-
-        <div className="rounded-lg border-0 p-4">
-          <RequestCount name="Completed Requests" ticketCount={10} assetCount={5} />
-        </div>
-      </div>
-        <div className="rounded-lg border border-gray-300 p-4">
-          <h2> SLA Breached</h2>
-          <div className="h-40 bg-gray-100 rounded" />
-        </div>
+      {/* Main content */}
+      <main className="flex-1 p-6">{renderContent()}</main>
     </div>
   );
 }
