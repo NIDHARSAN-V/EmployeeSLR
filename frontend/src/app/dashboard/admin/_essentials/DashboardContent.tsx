@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { Asset } from "@/types/asset";
 import { Ticket } from "@/types/ticket";
+import RequestCount from "../_components/request-count";
 
 export const  DashBoardContent = () => {
   const [currUser, setCurrUser] = useState<UserModel>();
@@ -67,10 +68,9 @@ export const  DashBoardContent = () => {
   const completedAssets = assets.filter((a) => a.status === "completed");
   const acceptedAssets = assets.filter((a) => a.accepted_by === user?.id);
 
-  const activityItems = [...acceptedTickets, ...acceptedAssets].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-  );
-
+  const openTickets = tickets.filter((t) => t.status !== "completed");
+  const openAssets = assets.filter((a) => a.status !== "completed");
+  
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-6 lg:p-8 font-sans">
       {/* Header */}
@@ -97,8 +97,23 @@ export const  DashBoardContent = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
+        <RequestCount 
+          name="Pending Requests" 
+          ticketCount={pendingTickets.length} 
+          assetCount={pendingAssets.length} 
+        />
+        <RequestCount 
+          name="Open Requests" 
+          ticketCount={openTickets.length} 
+          assetCount={openAssets.length} 
+        />
+        <RequestCount 
+          name="Completed Requests" 
+          ticketCount={completedTickets.length} 
+          assetCount={completedAssets.length} 
+        />
       </div>
     </div>
   );

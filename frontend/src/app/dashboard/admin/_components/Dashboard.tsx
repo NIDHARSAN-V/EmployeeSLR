@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import AllUsers from "./AllUsers";
+import AllUsers from "../_essentials/AllUsers";
 import SLATracking from "./SLATracking";
 import DashboardCard from "./DashboardCard";
 import SideBar from "../_essentials/SideBar";

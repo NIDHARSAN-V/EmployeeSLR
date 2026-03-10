@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import AssetCard from "../_components/AssetCard";
 import AssetFilters from "../_components/AssetFilters";
-import AssetPipeline from "../_components/AssetPipeline";
 import { GetAllAssets, AcceptAsset, CompleteAsset } from "@/api/asset";
 import { Asset } from "@/types/asset";
 import { useAuth } from "@/context/AuthContext";
@@ -86,8 +85,6 @@ export default function AssetsPage() {
           </div>
         </div>
       </div>
-
-      <AssetPipeline assets={assets} />
 
       <AssetFilters
         search={search}
