@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import AssetCard from "../_components/AssetCard";
 import AssetFilters from "../_components/AssetFilters";
-import AssetPipeline from "../_components/AssetPipeline";
 import { GetAllAssets, AcceptAsset, CompleteAsset } from "@/api/asset";
 import { Asset } from "@/types/asset";
 import { useAuth } from "@/context/AuthContext";
@@ -14,12 +13,17 @@ export default function AssetsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [expandedAsset, setExpandedAsset] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAssets = async () => {
       try {
         const allAssets = await GetAllAssets();
-        setAssets(allAssets.filter((a) => a.status !== "completed"));
+        setAssets(
+          allAssets.filter(
+            (a) => a.accepted_by === user?.id && a.status !== "completed",
+          ),
+        );
       } catch {
         setAssets([]);
       } finally {
@@ -33,8 +37,12 @@ export default function AssetsPage() {
     if (!user?.id) return;
     try {
       const updated = await AcceptAsset(id, user.id);
-      setAssets((prev) => prev.map((a) => (a.refId === id ? { ...a, ...updated } : a)));
-    } catch (e) { console.error(e); }
+      setAssets((prev) =>
+        prev.map((a) => (a.refId === id ? { ...a, ...updated } : a)),
+      );
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleComplete = async (id: string) => {
@@ -42,11 +50,14 @@ export default function AssetsPage() {
     try {
       await CompleteAsset(id, user.id);
       setAssets((prev) => prev.filter((a) => a.refId !== id));
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const filtered = assets.filter((a) => {
-    const matchesSearch = !search ||
+    const matchesSearch =
+      !search ||
       a.request_type.toLowerCase().includes(search.toLowerCase()) ||
       a.refId.toLowerCase().includes(search.toLowerCase()) ||
       a.kind.toLowerCase().includes(search.toLowerCase()) ||
@@ -56,38 +67,40 @@ export default function AssetsPage() {
   });
 
   const counts = {
-    pending:  assets.filter((a) => a.status === "pending").length,
+    pending: assets.filter((a) => a.status === "pending").length,
     accepted: assets.filter((a) => a.status === "accepted").length,
   };
 
   if (loading)
     return (
       <div className="min-h-screen bg-[#0d1117] flex items-center justify-center">
-        <p className="text-slate-700 text-xs uppercase tracking-widest animate-pulse">Loading...</p>
+        <p className="text-slate-700 text-xs uppercase tracking-widest animate-pulse">
+          Loading...
+        </p>
       </div>
     );
 
   return (
     <div className="min-h-screen text-slate-100 p-6 lg:p-10">
-
-      {/* Header */}
       <div className="mb-10">
         <p className="text-[10px] uppercase tracking-[0.2em] text-slate-600 mb-3">
           Resolver Console / Assets
         </p>
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold text-slate-100 tracking-tight">Asset Requests</h1>
+            <h1 className="text-2xl font-semibold text-slate-100 tracking-tight">
+              Asset Requests
+            </h1>
             <p className="text-sm text-slate-600 mt-1">
-              <span className="text-amber-400/80">{counts.pending}</span> pending &nbsp;
+              <span className="text-amber-400/80">{counts.pending}</span>{" "}
+              pending &nbsp;
               <span className="text-slate-700">·</span>&nbsp;
-              <span className="text-sky-400/80">{counts.accepted}</span> in progress
+              <span className="text-sky-400/80">{counts.accepted}</span> in
+              progress
             </p>
           </div>
         </div>
       </div>
-
-      <AssetPipeline assets={assets} />
 
       <AssetFilters
         search={search}
@@ -111,6 +124,12 @@ export default function AssetsPage() {
               asset={asset}
               onAccept={handleAccept}
               onComplete={handleComplete}
+              expanded={expandedAsset === asset.refId}
+              onToggle={() =>
+                setExpandedAsset(
+                  expandedAsset === asset.refId ? null : asset.refId,
+                )
+              }
             />
           ))}
         </div>

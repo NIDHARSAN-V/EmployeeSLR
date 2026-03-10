@@ -4,7 +4,7 @@ import { GetAllTickets } from "@/api/ticket";
 import { GetAllAssets } from "@/api/asset";
 import ActivityItem from "../_components/ActivityItem";
 import { UserModel } from "@/types/user";
-import { GetAllUsers, GetUserById } from "@/api/user";
+import { GetUserById } from "@/api/user";
 import { useAuth } from "@/context/AuthContext";
 import { useEffect, useState } from "react";
 import { Asset } from "@/types/asset";
@@ -62,11 +62,11 @@ export const DashBoardContent = () => {
 
   const pendingTickets = tickets.filter((t) => t.status === "pending");
   const completedTickets = tickets.filter((t) => t.status === "completed");
-  const acceptedTickets = tickets.filter((t) => t.accepted_by === user?.id);
+  const acceptedTickets = tickets.filter((t) => t.accepted_by === user?.id && t.status === "accepted");
 
   const pendingAssets = assets.filter((a) => a.status === "pending");
   const completedAssets = assets.filter((a) => a.status === "completed");
-  const acceptedAssets = assets.filter((a) => a.accepted_by === user?.id);
+  const acceptedAssets = assets.filter((a) => a.accepted_by === user?.id && a.status === "accepted");
 
   const activityItems = [...acceptedTickets, ...acceptedAssets].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -74,7 +74,6 @@ export const DashBoardContent = () => {
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 p-6 lg:p-8 font-sans">
-      {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl lg:text-3xl font-mono text-slate-100 tracking-tight">
           {greeting}, {currUser?.userName}.
@@ -99,31 +98,16 @@ export const DashBoardContent = () => {
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Activity feed */}
         <div className="xl:col-span-2">
           <div className="bg-slate-900 border border-slate-700/60 rounded-lg overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700/60">
               <div className="flex items-center gap-2">
                 <span className="text-xs font-mono uppercase tracking-widest text-slate-400">
-                  My Activity
+                  To Work On
                 </span>
                 <span className="text-[10px] font-mono bg-amber-400/10 text-amber-400 border border-amber-400/30 rounded px-1.5 py-0.5">
                   {activityItems.length}
                 </span>
-              </div>
-              <div className="flex items-center gap-3">
-                <a
-                  href="/dashboard/resolver/tickets"
-                  className="text-xs font-mono text-slate-500 hover:text-amber-400 transition-colors"
-                >
-                  Tickets →
-                </a>
-                <a
-                  href="/dashboard/resolver/assets"
-                  className="text-xs font-mono text-slate-500 hover:text-cyan-400 transition-colors"
-                >
-                  Assets →
-                </a>
               </div>
             </div>
 
@@ -141,7 +125,6 @@ export const DashBoardContent = () => {
           </div>
         </div>
 
-        {/* Workload */}
         <div className="flex flex-col gap-6">
           <div className="bg-slate-900 border border-slate-700/60 rounded-lg overflow-hidden">
             <div className="px-4 py-3 border-b border-slate-700/60">
@@ -192,7 +175,6 @@ export const DashBoardContent = () => {
             </div>
           </div>
 
-          {/* Quick stats */}
           <div className="bg-slate-900 border border-slate-700/60 rounded-lg overflow-hidden">
             <div className="px-4 py-3 border-b border-slate-700/60">
               <span className="text-xs font-mono uppercase tracking-widest text-slate-400">

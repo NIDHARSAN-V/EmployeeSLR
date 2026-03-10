@@ -5,12 +5,6 @@ import { useEffect, useState } from "react";
 
 type ActivityItemProps = Ticket | Asset;
 
-const statusConfig: Record<string, { label: string; class: string }> = {
-  pending:   { label: "Pending",   class: "text-yellow-400/80 bg-yellow-400/[0.07]" },
-  accepted:  { label: "Accepted",  class: "text-yellow-400/80 bg-yellow-400/[0.07]" },
-  completed: { label: "Completed", class: "text-emerald-400/80 bg-emerald-400/[0.07]" },
-};
-
 export default function ActivityItem(props: ActivityItemProps) {
   const { kind, request_type, raised_by, createdAt, status } = props;
   const [raisedBy, setRaisedBy] = useState<string>("");
@@ -34,11 +28,10 @@ export default function ActivityItem(props: ActivityItemProps) {
     day: "numeric",
   });
 
-  const sc = statusConfig[status] ?? statusConfig["pending"];
   const isAsset = kind?.toLowerCase() === "asset";
 
   return (
-    <div className="flex items-center gap-4 py-3 px-4 hover:bg-white/[0.02] transition-colors group">
+    <div className="flex items-center gap-4 py-3 px-4 hover:bg-white/2 transition-colors group">
 
       <span className={`shrink-0 w-14 text-center text-[10px] font-semibold uppercase tracking-widest py-0.5 rounded-sm ${
         isAsset
@@ -52,8 +45,8 @@ export default function ActivityItem(props: ActivityItemProps) {
         {request_type}
       </p>
 
-      <span className={`shrink-0 text-[10px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded-sm ${sc.class}`}>
-        {sc.label}
+      <span className={`shrink-0 text-[10px] font-semibold uppercase tracking-widest px-2 py-0.5 rounded-sm text-amber-400/80 bg-amber-400/[0.07]`}>
+        pending
       </span>
 
       <div className="hidden sm:flex shrink-0 items-center gap-1.5 text-xs text-slate-500">

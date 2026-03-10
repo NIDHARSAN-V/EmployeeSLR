@@ -13,12 +13,17 @@ export default function TicketsPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [expandedTicket, setExpandedTicket] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTickets = async () => {
       try {
         const allTickets = await GetAllTickets();
-        setTickets(allTickets.filter((t) => t.accepted_by === user?.id && t.completed_by === user?.id));
+        setTickets(
+          allTickets.filter(
+            (t) => t.accepted_by === user?.id && t.status !== "completed",
+          ),
+        );
       } catch {
         setTickets([]);
       } finally {
@@ -32,8 +37,12 @@ export default function TicketsPage() {
     if (!user?.id) return;
     try {
       const updated = await AcceptTicket(id, user.id);
-      setTickets((prev) => prev.map((t) => (t.refId === id ? { ...t, ...updated } : t)));
-    } catch (e) { console.error(e); }
+      setTickets((prev) =>
+        prev.map((t) => (t.refId === id ? { ...t, ...updated } : t)),
+      );
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const handleComplete = async (id: string) => {
@@ -41,11 +50,14 @@ export default function TicketsPage() {
     try {
       await CompleteTicket(id, user.id);
       setTickets((prev) => prev.filter((t) => t.refId !== id));
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const filtered = tickets.filter((t) => {
-    const matchesSearch = !search ||
+    const matchesSearch =
+      !search ||
       t.request_type.toLowerCase().includes(search.toLowerCase()) ||
       t.refId.toLowerCase().includes(search.toLowerCase()) ||
       t.kind.toLowerCase().includes(search.toLowerCase()) ||
@@ -55,14 +67,16 @@ export default function TicketsPage() {
   });
 
   const counts = {
-    pending:  tickets.filter((t) => t.status === "pending").length,
+    pending: tickets.filter((t) => t.status === "pending").length,
     accepted: tickets.filter((t) => t.status === "accepted").length,
   };
 
   if (loading)
     return (
       <div className="min-h-screen bg-[#0d1117] flex items-center justify-center">
-        <p className="text-slate-700 text-xs uppercase tracking-widest animate-pulse">Loading...</p>
+        <p className="text-slate-700 text-xs uppercase tracking-widest animate-pulse">
+          Loading...
+        </p>
       </div>
     );
 
@@ -74,13 +88,17 @@ export default function TicketsPage() {
         </p>
         <div className="flex items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-semibold text-slate-100 tracking-tight">Ticket Queue</h1>
+            <h1 className="text-2xl font-semibold text-slate-100 tracking-tight">
+              Ticket Queue
+            </h1>
             <p className="text-sm text-slate-600 mt-1">
-              <span className="text-amber-400/80">{counts.pending}</span> pending &nbsp;
+              <span className="text-amber-400/80">{counts.pending}</span>{" "}
+              pending &nbsp;
               <span className="text-slate-700">·</span>&nbsp;
-              <span className="text-sky-400/80">{counts.accepted}</span> in progress
+              <span className="text-sky-400/80">{counts.accepted}</span> in
+              progress
             </p>
-          </div> 
+          </div>
         </div>
       </div>
 
@@ -96,7 +114,9 @@ export default function TicketsPage() {
 
       {filtered.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-32 text-center">
-          <p className="text-slate-600 text-sm">No tickets match your filters</p>
+          <p className="text-slate-600 text-sm">
+            No tickets match your filters
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">
@@ -106,6 +126,12 @@ export default function TicketsPage() {
               ticket={ticket}
               onAccept={handleAccept}
               onComplete={handleComplete}
+              expanded={expandedTicket === ticket.refId}
+              onToggle={() =>
+                setExpandedTicket(
+                  expandedTicket === ticket.refId ? null : ticket.refId,
+                )
+              }
             />
           ))}
         </div>

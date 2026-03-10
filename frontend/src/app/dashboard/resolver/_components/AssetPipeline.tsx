@@ -21,7 +21,6 @@ export default function AssetPipeline({ assets }: AssetPipelineProps) {
     <div className="mb-8">
       <p className="text-[10px] uppercase tracking-[0.2em] text-slate-600 mb-4">Pipeline</p>
 
-      {/* Segmented bar */}
       <div className="flex h-[2px] mb-5 gap-0.5">
         {counts.map((s) => (
           <div
@@ -30,11 +29,10 @@ export default function AssetPipeline({ assets }: AssetPipelineProps) {
             style={{ width: `${(s.count / total) * 100}%` }}
           />
         ))}
-        {/* Fill remainder with slate */}
+
         <div className="h-full flex-1 bg-slate-800" />
       </div>
 
-      {/* Stage counts */}
       <div className="flex gap-8">
         {counts.map((s) => (
           <div key={s.key}>
