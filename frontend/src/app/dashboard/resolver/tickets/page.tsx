@@ -18,7 +18,7 @@ export default function TicketsPage() {
     const fetchTickets = async () => {
       try {
         const allTickets = await GetAllTickets();
-        setTickets(allTickets.filter((t) => t.status !== "completed"));
+        setTickets(allTickets.filter((t) => t.accepted_by === user?.id && t.completed_by === user?.id));
       } catch {
         setTickets([]);
       } finally {
