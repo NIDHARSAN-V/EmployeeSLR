@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Asset } from "@/types/asset";
+import { Ticket } from "@/types/ticket";
 import { GetUserById } from "@/api/user";
 
-interface AssetCardProps {
-  asset: Asset;
+interface TicketCardProps {
+  ticket: Ticket;
   onAccept?: (id: string) => void;
   onComplete?: (id: string) => void;
 }
@@ -22,19 +22,19 @@ const statusAccent: Record<string, string> = {
   completed: "border-l-emerald-400/40",
 };
 
-export default function AssetCard({
-  asset,
+export default function TicketCard({
+  ticket,
   onAccept,
   onComplete,
-}: AssetCardProps) {
+}: TicketCardProps) {
   const [expanded, setExpanded] = useState(false);
-  const [raisedByName, setRaisedByName] = useState<string>(asset.raised_by);
+  const [raisedByName, setRaisedByName] = useState<string>(ticket.raised_by);
   const [acceptedByName, setAcceptedByName] = useState<string | null>(null);
 
-  const sc = statusConfig[asset.status] ?? statusConfig["pending"];
-  const accent = statusAccent[asset.status] ?? "border-l-slate-700";
+  const sc = statusConfig[ticket.status] ?? statusConfig["pending"];
+  const accent = statusAccent[ticket.status] ?? "border-l-slate-700";
 
-  const formattedDate = new Date(asset.createdAt).toLocaleDateString("en-US", {
+  const formattedDate = new Date(ticket.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
     month: "short",
     day: "numeric",
@@ -43,12 +43,12 @@ export default function AssetCard({
   useEffect(() => {
     const fetchUserNames = async () => {
       try {
-        if (asset.raised_by) {
-          const user = await GetUserById(asset.raised_by);
+        if (ticket.raised_by) {
+          const user = await GetUserById(ticket.raised_by);
           setRaisedByName(user.userName);
         }
-        if (asset.accepted_by) {
-          const user = await GetUserById(asset.accepted_by);
+        if (ticket.accepted_by) {
+          const user = await GetUserById(ticket.accepted_by);
           setAcceptedByName(user.userName);
         }
       } catch (error) {
@@ -57,27 +57,27 @@ export default function AssetCard({
     };
 
     fetchUserNames();
-  }, [asset.raised_by, asset.accepted_by]);
+  }, [ticket.raised_by, ticket.accepted_by]);
 
   return (
     <div
       className={`bg-[#0d1117] border border-slate-800 border-l-2 ${accent} hover:border-slate-700 transition-all duration-200`}
     >
       <div className="p-4">
-        {/* Welcome Row */}
+        {/* Top row */}
         <div className="flex items-start justify-between gap-2 mb-3">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
               <span className="text-[10px] text-slate-600 tracking-widest uppercase">
-                {asset.kind}
+                {ticket.kind}
               </span>
               <span className="text-[10px] text-slate-700">·</span>
               <span className="text-[10px] text-slate-600 tracking-wider">
-                #{asset.refId}
+                #{ticket.refId}
               </span>
             </div>
             <h3 className="text-sm font-medium text-slate-200 leading-snug">
-              {asset.request_type}
+              {ticket.request_type}
             </h3>
           </div>
           <span
@@ -87,13 +87,13 @@ export default function AssetCard({
           </span>
         </div>
 
-        {/* Sub welcome Row */}
+        {/* Meta row */}
         <div className="flex items-center gap-4 text-[11px] text-slate-600 mb-4">
           <span>{formattedDate}</span>
-          {asset.completeDueAt && (
+          {ticket.completeDueAt && (
             <span className="text-amber-500/60">
               Due{" "}
-              {new Date(asset.completeDueAt).toLocaleDateString("en-US", {
+              {new Date(ticket.completeDueAt).toLocaleDateString("en-US", {
                 month: "short",
                 day: "numeric",
               })}
@@ -109,23 +109,8 @@ export default function AssetCard({
           >
             {expanded ? "Hide" : "Details"}
           </button>
+
           <div className="flex-1" />
-          {asset.status === "pending" && (
-            <button
-              onClick={() => onAccept?.(asset.refId)}
-              className="text-[11px] uppercase tracking-widest text-sky-400 hover:text-sky-300 transition-colors"
-            >
-              Accept →
-            </button>
-          )}
-          {asset.status === "accepted" && (
-            <button
-              onClick={() => onComplete?.(asset.refId)}
-              className="text-[11px] uppercase tracking-widest text-emerald-400 hover:text-emerald-300 transition-colors"
-            >
-              Complete →
-            </button>
-          )}
         </div>
 
         {/* Expanded details */}
@@ -133,12 +118,12 @@ export default function AssetCard({
           <div className="mt-4 pt-4 border-t border-slate-800/80 grid grid-cols-2 gap-x-6 gap-y-3">
             {[
               { label: "Raised By", value: raisedByName },
-              { label: "Accepted By", value: acceptedByName ?? "—" },
+              { label: "Accepted By", value: acceptedByName ?? "-" },
               { label: "Created", value: formattedDate },
               {
                 label: "Accepted At",
-                value: asset.acceptedAt
-                  ? new Date(asset.acceptedAt).toLocaleDateString("en-US", {
+                value: ticket.acceptedAt
+                  ? new Date(ticket.acceptedAt).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                       year: "numeric",
@@ -147,8 +132,8 @@ export default function AssetCard({
               },
               {
                 label: "Accept Due",
-                value: asset.acceptDueAt
-                  ? new Date(asset.acceptDueAt).toLocaleDateString("en-US", {
+                value: ticket.acceptDueAt
+                  ? new Date(ticket.acceptDueAt).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                     })
@@ -156,8 +141,8 @@ export default function AssetCard({
               },
               {
                 label: "Complete Due",
-                value: asset.completeDueAt
-                  ? new Date(asset.completeDueAt).toLocaleDateString("en-US", {
+                value: ticket.completeDueAt
+                  ? new Date(ticket.completeDueAt).toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                     })
