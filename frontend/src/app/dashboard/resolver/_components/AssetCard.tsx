@@ -11,6 +11,9 @@ interface AssetCardProps {
   asset: Asset;
   onAccept?: (id: string) => void;
   onComplete?: (id: string) => void;
+  // NEW:
+  expanded?: boolean;          // controlled expansion from parent
+  onToggle?: () => void;       // notify parent to toggle
 }
 
 const statusConfig: Record<string, { label: string; color: string }> = {
@@ -25,9 +28,17 @@ const statusAccent: Record<string, string> = {
   completed: "border-l-emerald-400/40",
 };
 
-export default function AssetCard({ asset, onAccept, onComplete }: AssetCardProps) {
-  const [expanded, setExpanded] = useState(false);
-  // Start as empty strings; fill after we fetch the user names
+export default function AssetCard({
+  asset,
+  onAccept,
+  onComplete,
+  expanded,        // controlled (optional)
+  onToggle,        // controlled (optional)
+}: AssetCardProps) {
+  // keep local state as fallback when parent is not controlling
+  const [localExpanded, setLocalExpanded] = useState(false);
+  const isExpanded = expanded ?? localExpanded;
+
   const [raisedByName, setRaisedByName] = useState<string>("");
   const [acceptedByName, setAcceptedByName] = useState<string>("");
 
@@ -73,6 +84,11 @@ export default function AssetCard({ asset, onAccept, onComplete }: AssetCardProp
     };
   }, [asset.raised_by, asset.accepted_by]);
 
+  const handleToggle = () => {
+    if (onToggle) return onToggle();           // delegate to parent if controlled
+    setLocalExpanded((v) => !v);               // otherwise manage locally
+  };
+
   return (
     <div className={`bg-[#0d1117] border border-slate-800 border-l-2 ${accent} hover:border-slate-700 transition-all duration-200`}>
       <div className="p-4">
@@ -114,10 +130,10 @@ export default function AssetCard({ asset, onAccept, onComplete }: AssetCardProp
         {/* Controls */}
         <div className="flex items-center gap-3 pt-3 border-t border-slate-800/80">
           <button
-            onClick={() => setExpanded((v) => !v)}
+            onClick={handleToggle}
             className="text-[10px] uppercase tracking-widest text-slate-600 hover:text-slate-400 transition-colors"
           >
-            {expanded ? "Hide" : "Details"}
+            {isExpanded ? "Hide" : "Details"}
           </button>
 
           <button
@@ -148,7 +164,7 @@ export default function AssetCard({ asset, onAccept, onComplete }: AssetCardProp
         </div>
 
         {/* Expanded details */}
-        {expanded && (
+        {isExpanded && (
           <div className="mt-4 pt-4 border-t border-slate-800/80 grid grid-cols-2 gap-x-6 gap-y-3">
             {[
               { label: "Raised By", value: raisedByName || "—" },
