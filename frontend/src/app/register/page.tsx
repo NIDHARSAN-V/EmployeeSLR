@@ -30,7 +30,7 @@ export default function RegisterPage() {
 
         <div className="space-y-5">
           
-          {/* Name */}
+          
           <div className="flex flex-col space-y-2">
             <label className="text-sm text-gray-400">Name</label>
             <input
@@ -42,7 +42,7 @@ export default function RegisterPage() {
             />
           </div>
 
-          {/* Email */}
+          
           <div className="flex flex-col space-y-2">
             <label className="text-sm text-gray-400">Email</label>
             <input
@@ -54,7 +54,7 @@ export default function RegisterPage() {
             />
           </div>
 
-          {/* Password */}
+          
           <div className="flex flex-col space-y-2">
             <label className="text-sm text-gray-400">Password</label>
             <input
@@ -66,7 +66,7 @@ export default function RegisterPage() {
             />
           </div>
 
-          {/* Role */}
+          
           <div className="flex flex-col space-y-2">
             <label className="text-sm text-gray-400">Role</label>
             <select
@@ -80,7 +80,7 @@ export default function RegisterPage() {
             </select>
           </div>
 
-          {/* Register Button */}
+          
           <button
             onClick={() => register(form)}
             className="w-full h-11 rounded-md bg-blue-600 text-white font-medium 
@@ -89,7 +89,7 @@ export default function RegisterPage() {
             Register
           </button>
 
-          {/* Already have an account? */}
+          
           <p className="text-center text-sm text-gray-400">
             Already registered?{" "}
             <span
