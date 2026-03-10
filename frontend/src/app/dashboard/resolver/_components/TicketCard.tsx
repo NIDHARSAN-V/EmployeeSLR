@@ -36,7 +36,7 @@ export default function TicketCard({
   const { user } = useAuth();
   const [isDiscussionOpen, setIsDiscussionOpen] = useState(false);
   const [raisedByName, setRaisedByName] = useState<string>("");
-  const [isDiscussionOpen, setIsDiscussionOpen] = useState(false);
+  // const [isDiscussionOpen, setIsDiscussionOpen] = useState(false);
 
   const sc = statusConfig[ticket.status] ?? statusConfig["pending"];
   const accent = statusAccent[ticket.status] ?? "border-l-slate-700";

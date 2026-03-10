@@ -45,7 +45,7 @@ export default function AssetCard({
   const [acceptedByName, setAcceptedByName] = useState<string>("");
 
   // NEW: discussion modal open state
-  const [isDiscussionOpen, setIsDiscussionOpen] = useState(false);
+  // const [isDiscussionOpen, setIsDiscussionOpen] = useState(false);
 
   const sc = statusConfig[asset.status] ?? statusConfig["pending"];
   const accent = statusAccent[asset.status] ?? "border-l-slate-700";
