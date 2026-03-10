@@ -6,18 +6,14 @@ import HomeView from "../_components/HomeView";
 import TicketForm from "../TicketForm/page";
 import AssetForm from "../AssetForm/page";
 import LogView from "../_components/LogView";
+import { apiUrl } from "@/lib/api";
+import AssetCard from "../../admin/_components/AssetCard";
 
 
 
-export type LogItem = {
-  refId: string;
-  kind: "ticket" | "asset";
-  request_type: string;
-  status: "pending" | "accepted" | "completed";
-  raised_by: string;
-  createdAt: string;
-};
-
+import { Ticket} from "@/types/ticket";
+import { Asset } from "@/types/asset";
+import TicketCard from "../../admin/_components/TicketCard";
 
 function getCookie(name: string): string {
   if (typeof document === "undefined") return "";
@@ -29,8 +25,8 @@ function getCookie(name: string): string {
 
 export default function EmployeePage() {
   const [active, setActive] = useState<string>("home");
-  const [tickets, setTickets] = useState<LogItem[]>([]);
-  const [assets, setAssets] = useState<LogItem[]>([]);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [assets, setAssets] = useState<Asset[]>([]);
   const [userId, setUserId] = useState("");
   const [error, setError] = useState("");
 
@@ -106,12 +102,22 @@ export default function EmployeePage() {
     <div className="flex-1 p-8">
       <HomeView />
 
-      <div className="mt-8">
-        <LogView tickets={tickets} userId={userId} />
-      </div>
+      <h3 className="text-xl font-bold mb-4">Your Ticket Requests</h3>
 
       <div className="mt-8">
-        <LogView tickets={assets} userId={userId} />
+        {/* <LogView tickets={tickets} userId={userId} /> */}
+        {assets.map((asset) => (
+          <AssetCard key={asset.id} asset={asset} />
+        ))}
+      </div>
+  <br />
+  <br />
+  <h3 className="text-xl font-bold mb-4">Your Asset Requests</h3>
+      <div className="mt-8">
+        {/* <LogView tickets={assets} userId={userId} /> */}
+        {assets.map((asset) => (
+          <TicketCard key={asset.id} ticket={asset} />
+        ))}
       </div>
     </div>
   </div>

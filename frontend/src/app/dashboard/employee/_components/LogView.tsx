@@ -3,14 +3,7 @@
 import { useState } from "react";
 import DiscussionModal from "./DiscussionModal";
 
-export type LogItem = {
-  refId: string;
-  kind: "ticket" | "asset";
-  request_type: string;
-  status: "pending" | "accepted" | "completed";
-  raised_by: string;
-  createdAt: string;
-};
+import { Ticket } from "@/types/ticket";
 
 const statusColors: Record<string, string> = {
   pending: "text-amber-400 bg-amber-400/10 border-amber-400/30",
@@ -22,7 +15,7 @@ export default function LogView({
   tickets,
   userId,
 }: {
-  tickets: LogItem[];
+  tickets: Ticket[];
   userId: string;
 }) {
   const [activeDiscussion, setActiveDiscussion] = useState<{
@@ -88,7 +81,7 @@ export default function LogView({
 
             {/* Discussion Button */}
             <button
-              onClick={() => openDiscussion(item.kind, item.refId)}
+              onClick={() => openDiscussion(item.kind as "ticket" | "asset", item.refId)}
               className="mt-4 text-cyan-400 font-mono text-xs underline hover:text-cyan-300"
             >
               💬 Discussion
