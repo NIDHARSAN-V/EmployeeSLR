@@ -13,10 +13,10 @@ RUN npm install
 COPY src ./src
 COPY .env .env  
 # This is crucial!
-
 # Compile all TypeScript files using tsconfig
 RUN npx tsc
 
 EXPOSE 8000
+
 
 CMD ["node", "dist/server.js"]

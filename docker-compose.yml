@@ -51,44 +51,44 @@
 
 
 
-services:
-  frontend:
-    image: frontend_next:latest
-    container_name: employeeslr-frontend
-    ports:
-      - "80:3000"
-    depends_on:
-      - server
-    networks:
-      - app-network
+# services:
+#   frontend:
+#     image: frontend_next:latest
+#     container_name: employeeslr-frontend
+#     ports:
+#       - "80:3000"
+#     depends_on:
+#       - server
+#     networks:
+#       - app-network
 
-  server:
-    image: server_node:latest
-    container_name: employeeslr-server
-    environment:
-      - MONGO_URI=mongodb://mongodb:27017/employeeslr
-    depends_on:
-      - mongodb
-    networks:
-      - app-network
-    ports:
-      - "8000:8000"
+#   server:
+#     image: server_node:latest
+#     container_name: employeeslr-server
+#     environment:
+#       - MONGO_URI=mongodb://mongodb:27017/employeeslr
+#     depends_on:
+#       - mongodb
+#     networks:
+#       - app-network
+#     ports:
+#       - "8000:8000"
 
-  mongodb:
-    image: mongo:latest
-    container_name: employeeslr-mongo
-    volumes:
-      - mongo_data:/data/db
-    networks:
-      - app-network
-    expose:
-      - "27017"
+#   mongodb:
+#     image: mongo:latest
+#     container_name: employeeslr-mongo
+#     volumes:
+#       - mongo_data:/data/db
+#     networks:
+#       - app-network
+#     expose:
+#       - "27017"
 
-volumes:
-  mongo_data:
+# volumes:
+#   mongo_data:
 
-networks:
-  app-network:
+# networks:
+#   app-network:
 
 
 
@@ -164,6 +164,7 @@ networks:
 
 
 services:
+
   frontend:
     image: nidharsan8008/frontend_next_image:latest 
     container_name: employeeslr-frontend
