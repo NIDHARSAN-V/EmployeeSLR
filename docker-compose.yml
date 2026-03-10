@@ -1,0 +1,38 @@
+version: "3.8"
+ 
+services:
+ 
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:3000"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+ 
+  server:
+    build: ./backend
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/employeeslr
+    depends_on:
+      - mongo
+    networks:
+      - app-network
+    expose:
+      - "8000"
+ 
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo_data:/data/db
+    networks:
+      - app-network
+    expose:
+      - "27017"
+ 
+volumes:
+  mongo_data:
+ 
+networks:
+  app-network:

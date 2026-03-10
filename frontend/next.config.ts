@@ -5,7 +5,7 @@ const nextConfig: NextConfig = {
   reactCompiler: true,
   // explicitly disable turbopack (avoids panic logs) and set root to this folder
   turbopack: {
-    enabled: false,
+    // enabled: false,
     root: __dirname, // ensures paths like src/app/layout.tsx are resolved inside frontend
   },
 };

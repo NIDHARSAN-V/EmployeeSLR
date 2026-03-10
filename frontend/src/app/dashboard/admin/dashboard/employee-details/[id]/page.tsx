@@ -4,9 +4,10 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import LogView from "./components/LogView";
 
-export type Ticket = {
+// Base type with common properties
+type BaseItem = {
     _id: string;
-    refId: string;           // required by LogView
+    refId: string;           // required by LogView - added to both
     kind: "ticket" | "asset";
     request_type: string;
     status: "pending" | "accepted" | "completed";
@@ -14,17 +15,18 @@ export type Ticket = {
     createdAt: string;
 };
 
-export type Asset = {
-    _id: string;
-    kind: "ticket" | "asset";
-    request_type: string;
-    status: "pending" | "accepted" | "completed";
-    raised_by: string;
-    createdAt: string;
+export type Ticket = BaseItem & {
+    kind: "ticket";
+    // Add any ticket-specific fields here
 };
 
+export type Asset = BaseItem & {
+    kind: "asset";
+    // Add any asset-specific fields here
+};
 
-
+// Union type for LogView
+export type LogItem = Ticket | Asset;
 
 export default function EmployeeDetails() {
     const params = useParams<{ id: string }>();
@@ -33,14 +35,10 @@ export default function EmployeeDetails() {
     const [tickets, setTickets] = useState<Ticket[]>([]);
     const [assets, setAssets] = useState<Asset[]>([]);
 
-
     useEffect(() => {
         fetchTickets();
         fetchAssets();
     }, [userId]);
-
-
-
 
     const fetchAssets = async () => {
         if (!userId) return;
@@ -50,14 +48,17 @@ export default function EmployeeDetails() {
             });
             if (!res.ok) throw new Error("Failed to fetch");
             const data = await res.json();
-            setAssets(Array.isArray(data) ? data : []);
+            // Ensure each asset has a refId (using _id as fallback)
+            const formattedAssets = (Array.isArray(data) ? data : []).map((asset: any) => ({
+                ...asset,
+                refId: asset.refId || asset._id, // Ensure refId exists
+                kind: "asset" as const
+            }));
+            setAssets(formattedAssets);
         } catch (err) {
-            console.error("Error fetching tickets:", err);
+            console.error("Error fetching assets:", err);
         }
     };
-
-
-
 
     const fetchTickets = async () => {
         if (!userId) return;
@@ -67,23 +68,33 @@ export default function EmployeeDetails() {
             });
             if (!res.ok) throw new Error("Failed to fetch");
             const data = await res.json();
-            setTickets(Array.isArray(data) ? data : []);
+            // Ensure each ticket has a refId
+            const formattedTickets = (Array.isArray(data) ? data : []).map((ticket: any) => ({
+                ...ticket,
+                refId: ticket.refId || ticket._id, // Ensure refId exists
+                kind: "ticket" as const
+            }));
+            setTickets(formattedTickets);
         } catch (err) {
             console.error("Error fetching tickets:", err);
         }
     };
 
-
-
-
     return (
-        <div>
-            <h1>Employee Details - {userId}</h1>
-             <br />
-             <h1>Ticket Log</h1>
-             <LogView tickets={tickets} userId={userId} />
-             
-             <LogView tickets={assets} userId={userId} />
+        <div className="p-6">
+            <h1 className="text-2xl font-bold mb-6">Employee Details - {userId}</h1>
+            
+            <div className="space-y-8">
+                <div>
+                    <h2 className="text-xl font-semibold mb-4">Ticket Log</h2>
+                    <LogView tickets={tickets} userId={userId} />
+                </div>
+                
+                <div>
+                    <h2 className="text-xl font-semibold mb-4">Asset Log</h2>
+                    <LogView tickets={assets} userId={userId} />
+                </div>
+            </div>
         </div>
-    )
+    );
 }

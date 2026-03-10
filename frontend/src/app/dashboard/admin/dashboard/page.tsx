@@ -5,7 +5,7 @@ import AllUsers from "../components/AllUsers";
 import SLATracking from "../components/SLATracking";
 // import Settings from "../components/Settings";
 // import Reports from "../components/Reports";
-type TabKey = "users" | "settings" | "reports";
+type TabKey = "users" | "slatracking" | "reports";
 
 const NAV_ITEMS: { key: TabKey; label: string }[] = [
   { key: "users", label: "All Users" },
