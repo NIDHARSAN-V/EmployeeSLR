@@ -3,6 +3,7 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import LogView from "./components/LogView";
+import { apiUrl } from "@/lib/api";
 
 // Base type with common properties
 type BaseItem = {
@@ -43,7 +44,7 @@ export default function EmployeeDetails() {
     const fetchAssets = async () => {
         if (!userId) return;
         try {
-            const res = await fetch(`http://localhost:8000/assets/raised/${userId}`, {
+            const res = await fetch(apiUrl(`/assets/raised/${userId}`), {
                 credentials: "include",
             });
             if (!res.ok) throw new Error("Failed to fetch");
@@ -63,7 +64,7 @@ export default function EmployeeDetails() {
     const fetchTickets = async () => {
         if (!userId) return;
         try {
-            const res = await fetch(`http://localhost:8000/tickets/raised/${userId}`, {
+            const res = await fetch(apiUrl(`/tickets/raised/${userId}`), {
                 credentials: "include",
             });
             if (!res.ok) throw new Error("Failed to fetch");
