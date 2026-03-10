@@ -36,6 +36,7 @@ export default function TicketCard({
   const { user } = useAuth();
   const [raisedByName, setRaisedByName] = useState<string>("");
   const [isDiscussionOpen, setIsDiscussionOpen] = useState(false);
+  const canComplete = ticket.status === "accepted" && ticket.accepted_by === user?.id;
 
   const sc = statusConfig[ticket.status] ?? statusConfig["pending"];
   const accent = statusAccent[ticket.status] ?? "border-l-slate-700";
@@ -141,7 +142,7 @@ export default function TicketCard({
             </button>
           )}
 
-          {ticket.status === "accepted" && (
+          {canComplete && (
             <button
               onClick={() => onComplete?.(ticket.refId)}
               className="text-[15px] uppercase tracking-widest text-emerald-400 hover:text-black transition-colors hover:font-bold hover:border-emerald-400/60 hover:border-2 hover:bg-emerald-400"
