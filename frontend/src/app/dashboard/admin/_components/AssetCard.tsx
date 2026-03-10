@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Asset } from "@/types/asset";
+import { GetUserById } from "@/api/user";
 
 interface AssetCardProps {
   asset: Asset;
@@ -27,6 +28,9 @@ export default function AssetCard({
   onComplete,
 }: AssetCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const [raisedByName, setRaisedByName] = useState<string>(asset.raised_by);
+  const [acceptedByName, setAcceptedByName] = useState<string | null>(null);
+
   const sc = statusConfig[asset.status] ?? statusConfig["pending"];
   const accent = statusAccent[asset.status] ?? "border-l-slate-700";
 
@@ -35,6 +39,25 @@ export default function AssetCard({
     month: "short",
     day: "numeric",
   });
+
+  useEffect(() => {
+    const fetchUserNames = async () => {
+      try {
+        if (asset.raised_by) {
+          const user = await GetUserById(asset.raised_by);
+          setRaisedByName(user.userName);
+        }
+        if (asset.accepted_by) {
+          const user = await GetUserById(asset.accepted_by);
+          setAcceptedByName(user.userName);
+        }
+      } catch (error) {
+        console.error("Error fetching user names:", error);
+      }
+    };
+
+    fetchUserNames();
+  }, [asset.raised_by, asset.accepted_by]);
 
   return (
     <div
@@ -94,8 +117,8 @@ export default function AssetCard({
         {expanded && (
           <div className="mt-4 pt-4 border-t border-slate-800/80 grid grid-cols-2 gap-x-6 gap-y-3">
             {[
-              { label: "Raised By", value: asset.raised_by },
-              { label: "Accepted By", value: asset.accepted_by ?? "—" },
+              { label: "Raised By", value: raisedByName },
+              { label: "Accepted By", value: acceptedByName ?? "—" },
               { label: "Created", value: formattedDate },
               {
                 label: "Accepted At",
