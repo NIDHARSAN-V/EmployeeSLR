@@ -36,7 +36,7 @@ function getCookie(name: string): string {
 }
 
 export default function EmployeePage() {
-  const [active, setActive] = useState("home");
+  const [active, setActive] = useState<string>("home");
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [assets, setAssets] = useState<Asset[]>([]);
   const [userId, setUserId] = useState("");
@@ -113,7 +113,7 @@ export default function EmployeePage() {
       <Sidebar active={active} setActive={setActive} />
 
       <div className="flex-1 p-8 bg-white min-h-screen">
-        {/* {active === "home" && <HomeView />} */}
+         {active === "home" && <HomeView />} 
 
         {active === "ticket" && userId && (
           <TicketForm userId={userId} refreshTickets={fetchTickets} />
@@ -126,7 +126,7 @@ export default function EmployeePage() {
         {active === "log" && <LogView tickets={tickets} userId={userId} />}
 {active === "log" && <LogView tickets={assets} userId={userId} />}
 
-        {active === "notifications" && <NotificationView tickets={tickets} />}
+       
       </div>
     </div>
   );
