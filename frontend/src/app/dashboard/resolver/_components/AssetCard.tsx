@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Asset } from "@/types/asset";
 import { GetUserById } from "@/api/user";
 
@@ -8,6 +8,8 @@ interface AssetCardProps {
   asset: Asset;
   onAccept?: (id: string) => void;
   onComplete?: (id: string) => void;
+  expanded: boolean;
+  onToggle: () => void;
 }
 
 const statusConfig: Record<string, { label: string; color: string }> = {
@@ -26,13 +28,24 @@ export default function AssetCard({
   asset,
   onAccept,
   onComplete,
+  expanded,
+  onToggle,
 }: AssetCardProps) {
-  const [expanded, setExpanded] = useState(false);
-  const [raisedByName, setRaisedByName] = useState<string>(asset.raised_by);
-  const [acceptedByName, setAcceptedByName] = useState<string | null>(null);
-
+  const [raisedByName, setRaisedByName] = useState<string>("--");
   const sc = statusConfig[asset.status] ?? statusConfig["pending"];
   const accent = statusAccent[asset.status] ?? "border-l-slate-700";
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const user = await GetUserById(asset.raised_by);
+        setRaisedByName(user.userName);
+      } catch (e) {
+        console.error("Error for ticket card is:", e);
+      }
+    };
+    fetchData();
+  }, [asset.raised_by]);
 
   const formattedDate = new Date(asset.createdAt).toLocaleDateString("en-US", {
     year: "numeric",
@@ -64,16 +77,11 @@ export default function AssetCard({
       className={`bg-[#0d1117] border border-slate-800 border-l-2 ${accent} hover:border-slate-700 transition-all duration-200`}
     >
       <div className="p-4">
-        {/* Welcome Row */}
         <div className="flex items-start justify-between gap-2 mb-3">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
               <span className="text-[10px] text-slate-600 tracking-widest uppercase">
                 {asset.kind}
-              </span>
-              <span className="text-[10px] text-slate-700">·</span>
-              <span className="text-[10px] text-slate-600 tracking-wider">
-                #{asset.refId}
               </span>
             </div>
             <h3 className="text-sm font-medium text-slate-200 leading-snug">
@@ -87,7 +95,6 @@ export default function AssetCard({
           </span>
         </div>
 
-        {/* Sub welcome Row */}
         <div className="flex items-center gap-4 text-[11px] text-slate-600 mb-4">
           <span>{formattedDate}</span>
           {asset.completeDueAt && (
@@ -101,10 +108,9 @@ export default function AssetCard({
           )}
         </div>
 
-        {/* Hide / Unhide*/}
         <div className="flex items-center gap-3 pt-3 border-t border-slate-800/80">
           <button
-            onClick={() => setExpanded(!expanded)}
+            onClick={onToggle}
             className="text-[10px] uppercase tracking-widest text-slate-600 hover:text-slate-400 transition-colors"
           >
             {expanded ? "Hide" : "Details"}
@@ -113,27 +119,25 @@ export default function AssetCard({
           {asset.status === "pending" && (
             <button
               onClick={() => onAccept?.(asset.refId)}
-              className="text-[11px] uppercase tracking-widest text-sky-400 hover:text-sky-300 transition-colors"
+              className="text-[15px] uppercase tracking-widest text-cyan-400 hover:text-black transition-colors hover:font-bold hover:border-cyan-400/60 hover:border-2 hover:bg-cyan-400"
             >
-              Accept →
+              Mark Accept →
             </button>
           )}
           {asset.status === "accepted" && (
             <button
               onClick={() => onComplete?.(asset.refId)}
-              className="text-[11px] uppercase tracking-widest text-emerald-400 hover:text-emerald-300 transition-colors"
+              className="text-[15px] uppercase tracking-widest text-emerald-400 hover:text-black transition-colors hover:font-bold hover:border-emerald-400/60 hover:border-2 hover:bg-emerald-400"
             >
-              Complete →
+              Mark Complete →
             </button>
           )}
         </div>
 
-        {/* Expanded details */}
         {expanded && (
           <div className="mt-4 pt-4 border-t border-slate-800/80 grid grid-cols-2 gap-x-6 gap-y-3">
             {[
               { label: "Raised By", value: raisedByName },
-              { label: "Accepted By", value: acceptedByName ?? "—" },
               { label: "Created", value: formattedDate },
               {
                 label: "Accepted At",
@@ -143,7 +147,7 @@ export default function AssetCard({
                       day: "numeric",
                       year: "numeric",
                     })
-                  : "-",
+                  : "—",
               },
               {
                 label: "Accept Due",
@@ -152,7 +156,7 @@ export default function AssetCard({
                       month: "short",
                       day: "numeric",
                     })
-                  : "-",
+                  : "—",
               },
               {
                 label: "Complete Due",
@@ -161,7 +165,7 @@ export default function AssetCard({
                       month: "short",
                       day: "numeric",
                     })
-                  : "-",
+                  : "—",
               },
             ].map(({ label, value }) => (
               <div key={label}>
