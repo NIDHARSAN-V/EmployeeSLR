@@ -116,7 +116,9 @@ export default function EmployeePage() {
       <div className="mt-8">
         {/* <LogView tickets={assets} userId={userId} /> */}
         {assets.map((asset) => (
-          <TicketCard key={asset.id} ticket={asset} />
+          <TicketCard key={asset.id} ticket={asset} expanded={false} onToggle={function (): void {
+            throw new Error("Function not implemented.");
+          } } />
         ))}
       </div>
     </div>

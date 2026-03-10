@@ -49,7 +49,7 @@ export const GetBreachedResource = async (id: string): Promise<SLAResource[]> =>
 
 export type BreachedItem = (Ticket | Asset) & { _kind: "ticket" | "asset" };
 
-export const GetBreachedResourceForAdmin = async (id: string): Promise<(Ticket | Asset)[]> => {
+export const GetBreachedResourceForAdmin = async (id: string): Promise<BreachedItem[]> => {
     try {
         const ticketRes = await api.get<Ticket[]>(`/notifications/sla-breached/tickets`);
         const assetRes = await api.get<Asset[]>(`/notifications/sla-breached/assets`);
@@ -57,7 +57,10 @@ export const GetBreachedResourceForAdmin = async (id: string): Promise<(Ticket |
         const tickets = Array.isArray(ticketRes.data) ? ticketRes.data : [];
         const assets = Array.isArray(assetRes.data) ? assetRes.data : [];
         
-        const combined = [...tickets, ...assets];
+        const combined: BreachedItem[] = [
+            ...tickets.map((item) => ({ ...item, _kind: "ticket" as const })),
+            ...assets.map((item) => ({ ...item, _kind: "asset" as const })),
+        ];
         return combined;
     } catch (error) {
         console.error("Error fetching breached resources:", error);
