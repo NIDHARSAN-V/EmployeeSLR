@@ -199,7 +199,6 @@ export default function TicketCard({
         )}
       </div>
 
-      {/* Discussion modal */}
       {isDiscussionOpen && user?.id && (
         <DiscussionModal
           kind="ticket"
@@ -210,5 +209,6 @@ export default function TicketCard({
         />
       )}
     </div>
+    
   );
 }
