@@ -1,6 +1,7 @@
 "use client";
 
 import { useSLA } from "@/context/SLAContext";
+import { apiUrl } from "@/lib/api";
 
 interface Ticket {
   refId: string;
@@ -27,7 +28,7 @@ export default function SLATracking() {
     console.log("Mapping ticket to resolver:", ticket);
 
     try {
-      const response = await fetch("http://localhost:8000/admin/assign/resolver", {
+      const response = await fetch(apiUrl("/admin/assign/resolver"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -50,7 +51,7 @@ export default function SLATracking() {
     console.log("Reminding resolver for ticket:", ticket.refId);
     
     try {
-      const response = await fetch("http://localhost:8000/admin/remind/resolver", {
+      const response = await fetch(apiUrl("/admin/remind/resolver"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

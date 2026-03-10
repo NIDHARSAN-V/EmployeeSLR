@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import './globals.css';
 import { SLAProvider } from "@/context/SLAContext";
+import { apiUrl } from "@/lib/api";
 
 function AuthWrapper({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -26,14 +27,12 @@ function AuthWrapper({ children }: { children: React.ReactNode }) {
 
 
 
-  
+
   useEffect(() => {
 
     const fetchSLAData = async () => {
       try {
-        const response = await fetch(
-          "http://localhost:8000/notifications/sla-breached/tickets"
-        );
+        const response = await fetch(apiUrl("/notifications/sla-breached/tickets"));
         const data = await response.json();
 
         console.log("SLA Data:", data);
@@ -42,13 +41,13 @@ function AuthWrapper({ children }: { children: React.ReactNode }) {
       }
     };
 
- 
+
     fetchSLAData();
 
-   
+
     const interval = setInterval(fetchSLAData, 10000);
 
-    
+
     return () => clearInterval(interval);
 
   }, []);
@@ -64,9 +63,9 @@ function AuthWrapper({ children }: { children: React.ReactNode }) {
   if (loading) return <p>Loading...</p>;
 
   return <>
-  
-  {children}
-  
+
+    {children}
+
   </>;
 }
 
@@ -87,7 +86,7 @@ export default function RootLayout({
       <body>
         <AuthProvider>
           <SLAProvider>
-          <AuthWrapper>{children}</AuthWrapper>
+            <AuthWrapper>{children}</AuthWrapper>
           </SLAProvider>
         </AuthProvider>
       </body>

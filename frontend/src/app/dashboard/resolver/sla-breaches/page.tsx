@@ -4,6 +4,7 @@ import { GetBreachedResource, SLAResource } from "@/api/sla";
 import { useAuth } from "@/context/AuthContext";
 import { useSLA } from "@/context/SLAContext";
 import { useEffect, useState } from "react";
+import { apiUrl } from "@/lib/api";
 
 export default function SLATracking() {
   const [breachedResource, setBreachedResource] = useState<SLAResource[]>([]);
@@ -29,7 +30,7 @@ export default function SLATracking() {
   const mapToResolver = async function (ticket: SLAResource) {
     console.log("Mapping ticket to resolver:", ticket);
     try {
-      const response = await fetch("http://localhost:8000/admin/assign/resolver", {
+      const response = await fetch(apiUrl("/admin/assign/resolver"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ticket: ticket }),
@@ -45,7 +46,7 @@ export default function SLATracking() {
   const remindResolver = async function (ticket: SLAResource) {
     console.log("Reminding resolver for ticket:", ticket.refId);
     try {
-      const response = await fetch("http://localhost:8000/admin/remind/resolver", {
+      const response = await fetch(apiUrl("/admin/remind/resolver"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ticket: ticket }),
@@ -85,11 +86,10 @@ export default function SLATracking() {
           {(breachedResource as SLAResource[]).map((resource) => (
             <div
               key={resource.refId}
-              className={`bg-[#141414] rounded-2xl border transition-colors duration-200 ${
-                resource.isOverdue
+              className={`bg-[#141414] rounded-2xl border transition-colors duration-200 ${resource.isOverdue
                   ? "border-red-800/40 shadow-[0_4px_24px_rgba(0,0,0,0.5),0_0_0_1px_rgba(180,60,60,0.08)]"
                   : "border-[#222] shadow-[0_4px_24px_rgba(0,0,0,0.4)] hover:border-[#2e2e2e]"
-              }`}
+                }`}
             >
               {/* Card Header */}
               <div className="flex items-center justify-between px-6 py-4 border-b border-[#1e1e1e]">
@@ -156,7 +156,7 @@ export default function SLATracking() {
                   <p className="text-[10px] uppercase tracking-widest text-[#444] mb-1">Deadline Type</p>
                   <p className="text-sm text-[#b0a898]">{resource.deadlineType}</p>
                 </div>
-              </div>           
+              </div>
             </div>
           ))}
         </div>
