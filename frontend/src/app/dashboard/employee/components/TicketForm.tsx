@@ -2,6 +2,16 @@
 
 import { useState } from "react";
 
+export type Ticket = {
+  _id: string;
+  kind: "ticket" | "asset";
+  request_type: string;
+  status: "pending" | "accepted" | "completed";
+  raised_by: string;
+  createdAt: string;
+};
+
+
 export default function TicketForm({
   userId,
   refreshTickets,
