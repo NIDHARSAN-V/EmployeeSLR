@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 
 export type Ticket = {
@@ -11,19 +12,18 @@ export type Ticket = {
   createdAt: string;
 };
 
-
 export default function TicketForm({
-  userId,
   refreshTickets,
 }: {
-  userId: string;
   refreshTickets: () => void;
 }) {
   const [requestType, setRequestType] = useState("vpn_issue");
   const [loading, setLoading] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-  const [tickets, setTickets] = useState<Ticket[]>([]);
+
+  const { user } = useAuth();
+  const userId = user?.id || "";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +34,6 @@ export default function TicketForm({
       setErrorMsg("User not authenticated. Please login again.");
       return;
     }
-    
 
     try {
       setLoading(true);
@@ -50,59 +49,46 @@ export default function TicketForm({
       });
 
       const data = await res.json();
-
       if (!res.ok) {
         setErrorMsg(data.message || "Failed to create ticket");
         return;
       }
 
-      setSuccessMsg("✅ Ticket created successfully!");
-      refreshTickets();
+      setSuccessMsg("Ticket created successfully!");
+      refreshTickets?.();
     } catch (error) {
       console.error("Error creating ticket:", error);
-      setErrorMsg("Failed to connect to server. Is the backend running?");
+      setErrorMsg("Failed to connect to the server.");
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchTickets = async () => {
-    if (!userId) return;
-    try {
-      const res = await fetch(`http://localhost:8000/tickets/raised/${userId}`, {
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error("Failed to fetch");
-      const data = await res.json();
-      setTickets(Array.isArray(data) ? data : []);
-    } catch (err) {
-      console.error("Error fetching tickets:", err);
-    }
-  };
-
-
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md border border-slate-200 max-w-md">
-      <h2 className="text-3xl font-bold text-slate-800 mb-6">Raise Ticket</h2>
+    <div className="bg-slate-900 border border-slate-700/60 rounded-lg shadow-lg p-6 max-w-md text-slate-200">
+      <h2 className="text-xl font-bold tracking-tight mb-4 text-slate-100">
+        Raise IT Ticket
+      </h2>
 
       {successMsg && (
-        <div className="mb-4 p-3 bg-green-100 text-green-700 rounded">
+        <div className="mb-4 p-3 text-sm bg-emerald-400/10 border border-emerald-400/30 text-emerald-400 rounded font-mono">
           {successMsg}
         </div>
       )}
       {errorMsg && (
-        <div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+        <div className="mb-4 p-3 text-sm bg-red-400/10 border border-red-400/30 text-red-400 rounded font-mono">
           {errorMsg}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <label className="block text-slate-700 font-medium">
-          Select Request Type
+      <form onSubmit={handleSubmit} className="space-y-4 font-mono text-xs">
+        <label className="block text-slate-400 uppercase tracking-wider">
+          Issue Type
         </label>
 
         <select
-          className="w-full border border-slate-300 p-2 rounded text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          className="w-full bg-slate-800 border border-slate-700 text-slate-200 p-2 rounded 
+          focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 focus:outline-none"
           value={requestType}
           onChange={(e) => setRequestType(e.target.value)}
         >
@@ -114,12 +100,12 @@ export default function TicketForm({
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition disabled:opacity-50"
+          className="w-full bg-cyan-500/20 text-cyan-400 border border-cyan-400/30 py-2 rounded 
+          hover:bg-cyan-500/30 transition font-bold tracking-wider uppercase disabled:opacity-50"
         >
           {loading ? "Submitting..." : "Submit"}
         </button>
       </form>
-
     </div>
   );
 }
