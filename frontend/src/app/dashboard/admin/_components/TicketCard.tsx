@@ -101,7 +101,7 @@ export default function TicketCard({
           )}
         </div>
 
-        {/* Action row */}
+        {/* Hide / Unhide*/}
         <div className="flex items-center gap-3 pt-3 border-t border-slate-800/80">
           <button
             onClick={() => setExpanded(!expanded)}
@@ -118,7 +118,7 @@ export default function TicketCard({
           <div className="mt-4 pt-4 border-t border-slate-800/80 grid grid-cols-2 gap-x-6 gap-y-3">
             {[
               { label: "Raised By", value: raisedByName },
-              { label: "Accepted By", value: acceptedByName ?? "—" },
+              { label: "Accepted By", value: acceptedByName ?? "-" },
               { label: "Created", value: formattedDate },
               {
                 label: "Accepted At",
@@ -128,7 +128,7 @@ export default function TicketCard({
                       day: "numeric",
                       year: "numeric",
                     })
-                  : "—",
+                  : "-",
               },
               {
                 label: "Accept Due",
@@ -137,7 +137,7 @@ export default function TicketCard({
                       month: "short",
                       day: "numeric",
                     })
-                  : "—",
+                  : "-",
               },
               {
                 label: "Complete Due",
@@ -146,7 +146,7 @@ export default function TicketCard({
                       month: "short",
                       day: "numeric",
                     })
-                  : "—",
+                  : "-",
               },
             ].map(({ label, value }) => (
               <div key={label}>

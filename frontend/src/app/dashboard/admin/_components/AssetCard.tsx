@@ -64,7 +64,7 @@ export default function AssetCard({
       className={`bg-[#0d1117] border border-slate-800 border-l-2 ${accent} hover:border-slate-700 transition-all duration-200`}
     >
       <div className="p-4">
-        {/* Top row */}
+        {/* Welcome Row */}
         <div className="flex items-start justify-between gap-2 mb-3">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
@@ -87,7 +87,7 @@ export default function AssetCard({
           </span>
         </div>
 
-        {/* Meta row */}
+        {/* Sub welcome Row */}
         <div className="flex items-center gap-4 text-[11px] text-slate-600 mb-4">
           <span>{formattedDate}</span>
           {asset.completeDueAt && (
@@ -101,7 +101,7 @@ export default function AssetCard({
           )}
         </div>
 
-        {/* Action row */}
+        {/* Hide / Unhide*/}
         <div className="flex items-center gap-3 pt-3 border-t border-slate-800/80">
           <button
             onClick={() => setExpanded(!expanded)}
@@ -128,7 +128,7 @@ export default function AssetCard({
                       day: "numeric",
                       year: "numeric",
                     })
-                  : "—",
+                  : "-",
               },
               {
                 label: "Accept Due",
@@ -137,7 +137,7 @@ export default function AssetCard({
                       month: "short",
                       day: "numeric",
                     })
-                  : "—",
+                  : "-",
               },
               {
                 label: "Complete Due",
@@ -146,7 +146,7 @@ export default function AssetCard({
                       month: "short",
                       day: "numeric",
                     })
-                  : "—",
+                  : "-",
               },
             ].map(({ label, value }) => (
               <div key={label}>
