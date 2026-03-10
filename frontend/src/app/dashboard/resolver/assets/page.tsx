@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 
 export default function AssetsPage() {
   const { user } = useAuth();
+
   const [assets, setAssets] = useState<Asset[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -16,21 +17,28 @@ export default function AssetsPage() {
   const [expandedAsset, setExpandedAsset] = useState<string | null>(null);
 
   useEffect(() => {
+    let ignore = false;
+
     const fetchAssets = async () => {
       try {
         const allAssets = await GetAllAssets();
+        if (ignore) return;
         setAssets(
           allAssets.filter(
-            (a) => a.accepted_by === user?.id && a.status !== "completed",
-          ),
+            (a) => a.accepted_by === user?.id && a.status !== "completed"
+          )
         );
       } catch {
-        setAssets([]);
+        if (!ignore) setAssets([]);
       } finally {
-        setLoading(false);
+        if (!ignore) setLoading(false);
       }
     };
+
     fetchAssets();
+    return () => {
+      ignore = true;
+    };
   }, [user?.id]);
 
   const handleAccept = async (id: string) => {
@@ -38,7 +46,7 @@ export default function AssetsPage() {
     try {
       const updated = await AcceptAsset(id, user.id);
       setAssets((prev) =>
-        prev.map((a) => (a.refId === id ? { ...a, ...updated } : a)),
+        prev.map((a) => (a.refId === id ? { ...a, ...updated } : a))
       );
     } catch (e) {
       console.error(e);
@@ -55,13 +63,15 @@ export default function AssetsPage() {
     }
   };
 
+  const normalizedSearch = search.trim().toLowerCase();
   const filtered = assets.filter((a) => {
     const matchesSearch =
-      !search ||
-      a.request_type.toLowerCase().includes(search.toLowerCase()) ||
-      a.refId.toLowerCase().includes(search.toLowerCase()) ||
-      a.kind.toLowerCase().includes(search.toLowerCase()) ||
-      a.raised_by.toLowerCase().includes(search.toLowerCase());
+      !normalizedSearch ||
+      a.request_type?.toLowerCase().includes(normalizedSearch) ||
+      a.refId?.toLowerCase().includes(normalizedSearch) ||
+      a.kind?.toLowerCase().includes(normalizedSearch) ||
+      (a.raised_by?.toLowerCase?.() ?? "").includes(normalizedSearch);
+
     const matchesStatus = statusFilter === "all" || a.status === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -121,14 +131,13 @@ export default function AssetsPage() {
           {filtered.map((asset) => (
             <AssetCard
               key={asset.refId}
-              id={asset.refId}
               asset={asset}
               onAccept={handleAccept}
               onComplete={handleComplete}
               expanded={expandedAsset === asset.refId}
               onToggle={() =>
                 setExpandedAsset(
-                  expandedAsset === asset.refId ? null : asset.refId,
+                  expandedAsset === asset.refId ? null : asset.refId
                 )
               }
             />
