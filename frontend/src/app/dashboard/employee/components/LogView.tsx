@@ -4,7 +4,7 @@ import { useState } from "react";
 import DiscussionModal from "./DiscussionModal";
 
 export type Ticket = {
-  refId: string;
+  _id: string;
   kind: "ticket" | "asset";
   request_type: string;
   status: "pending" | "accepted" | "completed";
@@ -48,7 +48,7 @@ export default function LogView({
       <div className="space-y-4">
         {tickets.map((item) => (
           <div
-            key={item.refId}
+            key={item._id}
             className="bg-white border border-slate-200 rounded-xl shadow-sm p-5 hover:shadow-md transition"
           >
             <div className="flex justify-between items-center">
@@ -82,7 +82,7 @@ export default function LogView({
 
             {/* Discussion Button */}
             <button
-              onClick={() => openDiscussion(item.kind, item.refId)}
+              onClick={() => openDiscussion(item.kind, item._id)}
               className="mt-3 text-blue-600 underline text-sm"
             >
               💬 Discussion
