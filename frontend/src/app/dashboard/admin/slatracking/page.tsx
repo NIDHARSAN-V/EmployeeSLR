@@ -28,7 +28,8 @@ export default function SLATrackingPage() {
         
         const breached: BreachedItem[] = breachedResources
           .map((item: Ticket | Asset) => {
-            const isTicket = "ticket" in item && item.ticket ? true : false;
+            const kind = typeof item.kind === "string" ? item.kind.toLowerCase() : "";
+            const isTicket = kind === "ticket";
             return {
               ...item,
               _kind: isTicket ? ("ticket" as const) : ("asset" as const),
@@ -175,7 +176,7 @@ export default function SLATrackingPage() {
         <div className="bg-slate-900 border border-slate-700/60 rounded-lg overflow-hidden">
           <div className="divide-y divide-slate-800/60">
             {filtered.map((item) => (
-              <BreachedRow key={item.refId} item={item} />
+              <BreachedRow key={`${item._kind}-${item.refId}`} item={item} />
             ))}
           </div>
         </div>
