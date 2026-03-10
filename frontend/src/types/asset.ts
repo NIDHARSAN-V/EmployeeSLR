@@ -1,6 +1,7 @@
 import { Status } from "./status";
 
 export interface Asset {
+  id: string | null | undefined;
   kind: string,
   refId: string,
   request_type: string,

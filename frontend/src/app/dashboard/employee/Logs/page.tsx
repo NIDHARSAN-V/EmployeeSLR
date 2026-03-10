@@ -1,33 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Sidebar from "./Sidebar";
-import HomeView from "./HomeView";
-import TicketForm from "./TicketForm";
-import AssetForm from "./AssetForm";
-import LogView from "./LogView";
+import Sidebar from "../_components/Sidebar";
+import HomeView from "../_components/HomeView";
+import TicketForm from "../TicketForm/page";
+import AssetForm from "../AssetForm/page";
+import LogView from "../_components/LogView";
 import { apiUrl } from "@/lib/api";
+import AssetCard from "../../admin/_components/AssetCard";
 
 
-export type Ticket = {
-  _id: string;
-  kind: "ticket" | "asset";
-  request_type: string;
-  status: "pending" | "accepted" | "completed";
-  raised_by: string;
-  createdAt: string;
-};
 
-export type Asset = {
-  _id: string;
-  kind: "ticket" | "asset";
-  request_type: string;
-  status: "pending" | "accepted" | "completed";
-  raised_by: string;
-  createdAt: string;
-};
+import { Ticket} from "@/types/ticket";
+import { Asset } from "@/types/asset";
+import TicketCard from "../../admin/_components/TicketCard";
 
-// Helper to get a cookie value by name
 function getCookie(name: string): string {
   if (typeof document === "undefined") return "";
   const match = document.cookie
@@ -43,7 +30,7 @@ export default function EmployeePage() {
   const [userId, setUserId] = useState("");
   const [error, setError] = useState("");
 
-  // Get userId from cookie after component mounts
+  
   useEffect(() => {
     const id = getCookie("userId");
     if (id) {
@@ -53,9 +40,9 @@ export default function EmployeePage() {
     }
   }, []);
 
-  // Fetch tickets raised by this user
-
-  const fetchAssets = async () => {
+  
+  
+    const fetchAssets = async () => {
     if (!userId) return;
     try {
       const res = await fetch(apiUrl(`/assets/raised/${userId}`), {
@@ -109,26 +96,31 @@ export default function EmployeePage() {
   }, [userId]);
 
   return (
-    <div className="flex min-h-screen bg-slate-100">
-      <Sidebar active={active} setActive={setActive} />
+  <div className="flex min-h-screen bg-slate-950 text-slate-100">
+    
+    
+    <div className="flex-1 p-8">
+      <HomeView />
 
-      <div className="flex-1 p-8 bg-white min-h-screen">
-        {active === "home" && <HomeView />}
+      <h3 className="text-xl font-bold mb-4">Your Ticket Requests</h3>
 
-        {active === "ticket" && userId && (
-          <TicketForm userId={userId} refreshTickets={fetchTickets} />
-        )}
-
-        {active === "asset" && userId && (
-          <AssetForm userId={userId} refreshTickets={fetchTickets} />
-        )}
-
-        {active === "log" && <LogView tickets={tickets} userId={userId} />}
-        {active === "log" && <LogView tickets={assets} userId={userId} />}
-
-
+      <div className="mt-8">
+        {/* <LogView tickets={tickets} userId={userId} /> */}
+        {assets.map((asset) => (
+          <AssetCard key={asset.id} asset={asset} />
+        ))}
+      </div>
+  <br />
+  <br />
+  <h3 className="text-xl font-bold mb-4">Your Asset Requests</h3>
+      <div className="mt-8">
+        {/* <LogView tickets={assets} userId={userId} /> */}
+        {assets.map((asset) => (
+          <TicketCard key={asset.id} ticket={asset} />
+        ))}
       </div>
     </div>
-  );
+  </div>
+);
 }
 
