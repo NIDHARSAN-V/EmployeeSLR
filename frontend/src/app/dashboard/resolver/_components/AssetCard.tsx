@@ -3,8 +3,11 @@
 import { useState, useEffect } from "react";
 import { Asset } from "@/types/asset";
 import { GetUserById } from "@/api/user";
+import { useAuth } from "@/context/AuthContext";
+import DiscussionModal from "@/app/dashboard/resolver/_components/DiscussionModal";
 
-export interface AssetCardProps {
+interface AssetCardProps {
+  id: string;
   asset: Asset;
   onAccept?: (id: string) => void;
   onComplete?: (id: string) => void;
@@ -132,6 +135,15 @@ export default function AssetCard({
           >
             {isExpanded ? "Hide" : "Details"}
           </button>
+
+          <button
+            type="button"
+            onClick={() => setIsDiscussionOpen(true)}
+            className="text-[10px] uppercase tracking-widest text-slate-600 hover:text-slate-400 transition-colors"
+          >
+            Comments
+          </button>
+
           <div className="flex-1" />
           {asset.status === "pending" && (
             <button
@@ -197,6 +209,16 @@ export default function AssetCard({
           </div>
         )}
       </div>
+
+      {isDiscussionOpen && user?.id && (
+        <DiscussionModal
+          kind="asset"
+          refId={id}
+          userId={user.id}
+          title={asset.request_type}
+          onClose={() => setIsDiscussionOpen(false)}
+        />
+      )}
     </div>
   );
 }
