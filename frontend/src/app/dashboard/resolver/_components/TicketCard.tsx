@@ -34,7 +34,7 @@ export default function TicketCard({
   onToggle,
 }: TicketCardProps) {
   const { user } = useAuth();
-
+  const [isDiscussionOpen, setIsDiscussionOpen] = useState(false);
   const [raisedByName, setRaisedByName] = useState<string>("");
   const [isDiscussionOpen, setIsDiscussionOpen] = useState(false);
 
