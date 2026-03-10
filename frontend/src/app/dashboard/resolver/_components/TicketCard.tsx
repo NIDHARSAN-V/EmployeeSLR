@@ -60,10 +60,6 @@ export default function TicketCard({
           const user = await GetUserById(ticket.raised_by);
           setRaisedByName(user.userName);
         }
-        if (ticket.accepted_by) {
-          const user = await GetUserById(ticket.accepted_by);
-          setAcceptedByName(user.userName);
-        }
       } catch (error) {
         console.error("Error fetching user names:", error);
       }

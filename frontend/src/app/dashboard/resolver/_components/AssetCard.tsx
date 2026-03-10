@@ -60,10 +60,6 @@ export default function AssetCard({
           const user = await GetUserById(asset.raised_by);
           setRaisedByName(user.userName);
         }
-        if (asset.accepted_by) {
-          const user = await GetUserById(asset.accepted_by);
-          setAcceptedByName(user.userName);
-        }
       } catch (error) {
         console.error("Error fetching user names:", error);
       }
