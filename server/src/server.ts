@@ -1,7 +1,7 @@
-import "dotenv/config"; // loads .env before reading process.env [web:23]
-import "dotenv/config"; // ensure env loaded
+import "dotenv/config"; 
+import "dotenv/config"; 
 import { connectDB } from "./config/db";
-import app from "./app"; // import configured express instance
+import app from "./app"; 
 
 async function bootstrap() {
   await connectDB();

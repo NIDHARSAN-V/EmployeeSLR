@@ -5,7 +5,7 @@ import { generateToken } from "../utils/generateToken";
 import { Role } from "../types/user.types";
 import { isValidObjectId } from "../service/resourceservice";
 
-// REGISTER
+// register
 export const registerUser = async (req: Request, res: Response) => {
   const { userName, email, password, role } = req.body;
 
@@ -43,7 +43,7 @@ export const registerUser = async (req: Request, res: Response) => {
   }
 };
 
-// LOGIN
+// login
 export const loginUser = async (req: Request, res: Response) => {
   
   const { email, password } = req.body;
@@ -107,7 +107,7 @@ export const getAllUsers = async (req: Request, res: Response) => {
 }
 
 
-// LOGOUT
+// logout
 export const logoutUser = (req: Request, res: Response) => {
   res.clearCookie("token").json({
     success: true,
@@ -119,10 +119,10 @@ export const logoutUser = (req: Request, res: Response) => {
 
 export const getUserById = async (req: Request, res: Response) => {
 
-  const { id } = req.params;   // Use params, not body
+  const { id } = req.params;   
 
   try {
-    // Validate ObjectId
+    
     if (!isValidObjectId(id)) {
       return res.status(400).json({
         success: false,

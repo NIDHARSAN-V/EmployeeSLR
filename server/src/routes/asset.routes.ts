@@ -16,7 +16,6 @@ const router = Router();
 router.post("/", createAsset);
 router.get("/", listAssets);
 
-// put these BEFORE "/:id"
 router.get("/raised/:userId", getAssetsRaisedByUser);
 router.get("/solved/:userId", getAssetsSolvedByUser);
 router.get("/accepted/:userId" , getAssetsAcceptedByUser);

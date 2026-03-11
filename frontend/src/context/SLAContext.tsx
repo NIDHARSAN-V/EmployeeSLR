@@ -16,7 +16,7 @@ interface SLAContextType {
 }
 
 const SLAContext = createContext<SLAContextType | null>(null);
-
+// sla provider to fetch SLA breached tickets every 10 seconds
 export function SLAProvider({ children }: { children: React.ReactNode }) {
   const [slaData, setSlaData] = useState<Ticket[]>([]);
 
@@ -58,7 +58,7 @@ export function SLAProvider({ children }: { children: React.ReactNode }) {
     </SLAContext.Provider>
   );
 }
-
+// global hook for SLA context
 export function useSLA() {
   const context = useContext(SLAContext);
   if (!context) throw new Error("useSLA must be used inside SLAProvider");
