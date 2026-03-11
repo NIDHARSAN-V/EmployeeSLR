@@ -183,9 +183,9 @@ services:
     image: nidharsan8008/frontend_next_image:latest
     container_name: employeeslr-frontend
     environment:
-      - NEXT_PUBLIC_API_BASE_URL=/api   # ⬅️ changed from http://server:8000
+      - NEXT_PUBLIC_API_BASE_URL=/api   
     expose:
-      - "3000"                          # ⬅️ internal only (no public port)
+      - "3000"                       
     depends_on:
       - server
     networks:
@@ -197,7 +197,7 @@ services:
     environment:
       - MONGO_URI=mongodb://mongodb:27017/employeeslr
     expose:
-      - "8000"                          # ⬅️ internal only (no public port)
+      - "8000"                         
     depends_on:
       - mongodb
     networks:
