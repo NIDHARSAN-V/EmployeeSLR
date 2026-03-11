@@ -24,75 +24,65 @@ function Home() {
             setLoading(true);
             setError(null);
             setResult(null);
-            // If your route is GET /seed (recommended):
             const res = await fetch((0, __TURBOPACK__imported__module__$5b$project$5d2f$src$2f$lib$2f$api$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["apiUrl"])("/seed"), {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                credentials: "include"
+                credentials: "include" // optional
             });
-            // If you made /seed a POST route instead, use:
-            // const res = await fetch(apiUrl("/seed"), {
-            //   method: "POST",
-            //   headers: { "Content-Type": "application/json" },
-            //   credentials: "include",
-            // });
             const data = await res.json();
-            if (!res.ok) {
-                throw new Error(data?.error || data?.message || "Seeding failed");
-            }
+            if (!res.ok) throw new Error(data?.error || "Seeding failed");
             setResult(data);
         } catch (err) {
-            setError(err?.message || "Unknown error");
+            setError(err?.message ?? "Unknown error");
         } finally{
             setLoading(false);
         }
     };
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-        className: "flex min-h-screen flex-col items-center justify-center gap-6 bg-zinc-50 p-8 font-sans dark:bg-black",
+        className: "…",
         children: [
-            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
-                className: "mb-2 text-5xl font-extrabold text-blue-600",
-                children: "HOME"
-            }, void 0, false, {
-                fileName: "[project]/src/app/page.tsx",
-                lineNumber: 45,
-                columnNumber: 7
-            }, this),
+            "…",
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("button", {
                 onClick: seedData,
                 disabled: loading,
-                className: "rounded bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700 disabled:opacity-50",
-                children: loading ? "Seeding..." : "Seed"
+                children: loading ? "Seeding…" : "Seed"
             }, void 0, false, {
                 fileName: "[project]/src/app/page.tsx",
-                lineNumber: 47,
+                lineNumber: 32,
+                columnNumber: 7
+            }, this),
+            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("h1", {
+                children: "Home Page"
+            }, void 0, false, {
+                fileName: "[project]/src/app/page.tsx",
+                lineNumber: 36,
                 columnNumber: 7
             }, this),
             error && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("pre", {
-                className: "max-w-3xl overflow-auto rounded border border-red-300 bg-red-50 p-4 text-red-700",
+                className: "…",
                 children: [
                     "Error: ",
                     error
                 ]
             }, void 0, true, {
                 fileName: "[project]/src/app/page.tsx",
-                lineNumber: 51,
+                lineNumber: 38,
                 columnNumber: 17
             }, this),
             result && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("pre", {
-                className: "max-w-3xl overflow-auto rounded border border-green-300 bg-green-50 p-4 text-green-800",
+                className: "…",
                 children: JSON.stringify(result, null, 2)
             }, void 0, false, {
                 fileName: "[project]/src/app/page.tsx",
-                lineNumber: 55,
+                lineNumber: 39,
                 columnNumber: 18
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/src/app/page.tsx",
-        lineNumber: 44,
+        lineNumber: 30,
         columnNumber: 10
     }, this);
 }

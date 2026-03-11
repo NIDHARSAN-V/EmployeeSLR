@@ -10,8 +10,9 @@ import discussionRoutes from "./routes/discussion.routes";
 
 
 import adminRoutes from "./routes/adminaction.route";
-import seedDemo from "./seed/seedDemo";
 
+
+import seedRoutes from "./routes/seed.routes"; 
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 
+app.use("/seed", seedRoutes);
 // app.get("/" , console.log("Hello"))
 app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
