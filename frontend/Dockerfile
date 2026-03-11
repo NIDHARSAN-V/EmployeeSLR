@@ -10,3 +10,4 @@ COPY .env .env
 COPY . .
 RUN npm run build
 CMD ["npm", "start"]
+
