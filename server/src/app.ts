@@ -10,6 +10,7 @@ import discussionRoutes from "./routes/discussion.routes";
 
 
 import adminRoutes from "./routes/adminaction.route";
+import seedDemo from "./seed/seedDemo";
 
 
 const app = express();
@@ -24,6 +25,7 @@ app.use(
 
 app.use(express.json());
 app.use(cookieParser());
+
 
 // app.get("/" , console.log("Hello"))
 app.use("/auth", authRoutes);
