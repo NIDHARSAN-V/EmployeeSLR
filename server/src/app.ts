@@ -10,6 +10,10 @@ import discussionRoutes from "./routes/discussion.routes";
 
 
 import adminRoutes from "./routes/adminaction.route";
+<<<<<<< HEAD
+=======
+import { seedDemo } from "./seed/seedDemo";
+>>>>>>> 044393799fdd2fca29fd8c3109e30981c23de2cf
 
 
 import seedRoutes from "./routes/seed.routes"; 
@@ -19,7 +23,7 @@ const app = express();
 // ✅ CORS CONFIG (IMPORTANT)
 app.use(
   cors({
-    origin: ["http://localhost:3000" , "http://localhost" , "http://135.235.195.238" , "http://98.70.28.134"],
+    origin: ["http://localhost:3000", "http://localhost", "http://135.235.195.238", "http://98.70.28.134"],
     credentials: true, // allow cookies
   })
 );
@@ -37,5 +41,10 @@ app.use("/assets", assetRoutes);
 app.use("/notifications", notificationRoutes);
 app.use("/discussion", discussionRoutes);
 
+app.get("/seed", async (req, res) => {
+    const baseUrl = `http://localhost:${process.env.PORT ?? 8000}`;
+    const result = await seedDemo(baseUrl);
+    res.json(result);
+});
 
 export default app;

@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const notification_controller_1 = require("../controllers/notification.controller");
+const router = (0, express_1.Router)();
+router.get("/deadline/:userId", notification_controller_1.notificationForDeadline);
+router.get("/ended/:userId", notification_controller_1.notificationForTimeEnded);
+router.get("/sla-breached/tickets", notification_controller_1.slaBreachedTickets);
+router.get("/sla-breached/assets", notification_controller_1.slaBreachedAssets);
+router.get("/sla-near/tickets", notification_controller_1.slaNearTickets);
+router.get("/sla-near/assets", notification_controller_1.slaNearAssets);
+exports.default = router;
