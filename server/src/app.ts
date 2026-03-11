@@ -10,13 +10,10 @@ import discussionRoutes from "./routes/discussion.routes";
 
 
 import adminRoutes from "./routes/adminaction.route";
-<<<<<<< HEAD
-=======
-import { seedDemo } from "./seed/seedDemo";
->>>>>>> 044393799fdd2fca29fd8c3109e30981c23de2cf
 
 
 import seedRoutes from "./routes/seed.routes"; 
+import seedDemo from "./seed/seedDemo";
 
 const app = express();
 
@@ -32,7 +29,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 
-app.use("/seed", seedRoutes);
+// app.use("/seed", seedRoutes);
 // app.get("/" , console.log("Hello"))
 app.use("/auth", authRoutes);
 app.use("/admin", adminRoutes);
