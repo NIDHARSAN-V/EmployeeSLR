@@ -181,7 +181,7 @@ services:
 
   frontend:
     image: nidharsan8008/frontend_next_image:latest
-    container_name: employeeslr-frontend
+    container_name: harsh_container_name
     environment:
       - NEXT_PUBLIC_API_BASE_URL=/api   
     expose:
